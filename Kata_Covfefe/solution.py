@@ -10,3 +10,12 @@
 # don't modify the given string, otherwise this will break the test cases.
 
 def covfefe(s):
+    newTweet = ""
+    if "coverage" in s:
+        newTweet = s.replace("coverage", "covfefe")
+    if "coverage" not in s:
+        newTweet = s + " covfefe"
+
+    return newTweet
+
+print(covfefe('coverage'))
