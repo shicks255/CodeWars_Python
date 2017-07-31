@@ -30,21 +30,21 @@
 import unittest
 
 def de_nico(key,msg):
-    keyList = list(key)
-    keyDictionary = {}
-    keyList.sort()
+    keyToNumberMap = {}
 
+    keyAsList = list(key)
+    keyAsList.sort()
     int = 1
-    for let in keyList:
-        keyDictionary[let] = int
+    for letter in keyAsList:
+        keyToNumberMap[letter] = int
         int += 1
 
     newKey = []
-    for let in key:
-        newKey.append(keyDictionary[let])
+    for letter in key:
+        newKey.append(keyToNumberMap[letter])
 
-    x = len(key)
-    listOf5LengthChunks = [msg[i: i + x] for i in range(0, len(msg), x)]
+    keyLength = len(key)
+    listOf5LengthChunks = [msg[i: i + keyLength] for i in range(0, len(msg), keyLength)]
 
     newMessage = ""
 
@@ -55,7 +55,7 @@ def de_nico(key,msg):
 
     return newMessage.strip()
 
-print(de_nico("a", "message"))
+print(de_nico("crazy", "cseerntiofarmit on  "))
 
 # class Tests(unittest.TestCase):
 #     def test_all(self):
