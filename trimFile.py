@@ -108,4 +108,3 @@ def trim_files_action(oldAndNewNameDictionary):
             shutil.move(key, oldAndNewNameDictionary[key])
 
 prompt_user_for_directory()
-
