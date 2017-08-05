@@ -63,7 +63,9 @@ def prompt_user_if_path_is_good():
 def prompt_user_for_expression():
     remover_expression = input('What would you like to remove from each item? '
                                'Separate different items with commas.\n'
-                               'Type -z to remove dots between works.\n')
+                               'Type -z to remove dots between words.\n'
+                               'Type -t to make the the filename title case.\n'
+                               'Type -d to remove dashes between words.\n')
     return remover_expression
 
 def trim_files__for_prompt(remover_expression, pathContents):
@@ -78,6 +80,13 @@ def trim_files__for_prompt(remover_expression, pathContents):
             if expression == '-z':
                 countOfPeriods = item.count('.') - 1
                 newName = item.replace('.', ' ', countOfPeriods)
+
+            if expression == '-t':
+                newName = item.title()
+
+            if expression == '-d':
+                countOfDashes = item.count('_') - 1
+                newName = item.replace('_', ' ', countOfDashes)
 
             regex = re.compile(re.escape(expression))
             mo = regex.search(item)
