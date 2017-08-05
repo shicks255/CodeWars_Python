@@ -79,14 +79,23 @@ def trim_files__for_prompt(remover_expression, pathContents):
         for expression in expressionArguments:
             if expression == '-z':
                 countOfPeriods = item.count('.') - 1
-                newName = item.replace('.', ' ', countOfPeriods)
+                if len(newName) == 0:
+                    newName = item.replace('.', ' ', countOfPeriods)
+                else:
+                    newName = newName.replace('.', ' ', countOfPeriods)
 
             if expression == '-t':
-                newName = item.title()
+                if len(newName) == 0:
+                    newName = item.title()
+                else:
+                    newName = newName.title()
 
             if expression == '-d':
                 countOfDashes = item.count('_') - 1
-                newName = item.replace('_', ' ', countOfDashes)
+                if len(newName) == 0:
+                    newName = item.replace('_', ' ', countOfDashes)
+                else:
+                    newName = newName.replace('_', ' ', countOfDashes)
 
             regex = re.compile(re.escape(expression))
             mo = regex.search(item)
