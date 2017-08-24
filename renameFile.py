@@ -67,7 +67,9 @@ def prompt_user_if_path_is_good():
 
 def prompt_user_for_expression():
     remover_expression = input('Enter the text you want replace, following by the text to replace it with.'
-                               'Enter * as a placeholder for the text being replaced.\n')
+                               'Enter * as a placeholder for the text being replaced.\n'
+                               'Enter -end at the front of the replacement text to append '
+                               'text to the end of the filename.\n')
     return remover_expression
 
 def rename_files__for_prompt(remover_expression, pathContents):
@@ -80,16 +82,20 @@ def rename_files__for_prompt(remover_expression, pathContents):
 
         replacementString = expressionArguments[1]
 
-        regex = re.compile(expressionArguments[0])
-        mo = regex.search(item)
-        if mo:
-            if '*' in replacementString:
-                firstPart = replacementString[:replacementString.index('*')]
-                secondPart = replacementString[replacementString.index('*')+1:]
-                replacementText = firstPart + (mo.group().lstrip()) + secondPart
-                newName = item.replace(mo.group(), replacementText)
-            else:
-                newName = item.replace(mo.group(), '')
+        if (expressionArguments[0].startswith('-end')):
+            indexOfPeriod = item.index('.')
+            newName = item[:indexOfPeriod] + replacementString + item[indexOfPeriod:]
+        else:
+            regex = re.compile(expressionArguments[0])
+            mo = regex.search(item)
+            if mo:
+                if '*' in replacementString:
+                    firstPart = replacementString[:replacementString.index('*')]
+                    secondPart = replacementString[replacementString.index('*')+1:]
+                    replacementText = firstPart + (mo.group().lstrip()) + secondPart
+                    newName = item.replace(mo.group(), replacementText)
+                else:
+                    newName = item.replace(mo.group(), '')
 
         if len(newName) > 0:
             newName = re.sub('\s+', ' ', newName)
