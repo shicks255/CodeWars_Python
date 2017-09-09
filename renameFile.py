@@ -95,7 +95,7 @@ def rename_files__for_prompt(remover_expression, pathContents):
                     replacementText = firstPart + (mo.group().lstrip()) + secondPart
                     newName = item.replace(mo.group(), replacementText)
                 else:
-                    newName = item.replace(mo.group(), '')
+                    newName = item.replace(mo.group(), replacementString)
 
         if len(newName) > 0:
             newName = re.sub('\s+', ' ', newName)
