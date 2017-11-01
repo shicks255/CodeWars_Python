@@ -21,12 +21,17 @@
 
 # class CountSmileys:
 def count_smileys(arr):
+    if len(arr) == 0:
+        return 0
     numberOfSmileys = 0
     for item in arr:
         length = len(item)
         if item[0] == ';' or item[0] == ':':
             if item[length-1] == ')' or item[length-1] == 'D':
-                numberOfSmileys = numberOfSmileys+1
+                if length == 3 and (item[1] == '-' or item[1] == '~'):
+                    numberOfSmileys = numberOfSmileys+1
+                if length == 2:
+                    numberOfSmileys = numberOfSmileys+1
     return numberOfSmileys
 
 
