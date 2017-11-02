@@ -18,7 +18,32 @@
 
 def find_missing_number(numberString):
     numbers = numberString.split()
-    print(numbers)
+    realNumbers = []
+    for number in numbers:
+        if not number.isdigit():
+            return 1
+        realNumbers.append(int(number))
+    realNumbers.sort()
 
+    # empty
+    if len(realNumbers) == 0:
+        return 0
+    start = realNumbers[0]
 
-find_missing_number("1 3 2 5")
+    # doesnt start with 1
+    if realNumbers[0] != 1:
+        return 1
+
+    missingNumberArray = []
+    for number in realNumbers:
+        if int(number) != start:
+            missingNumberArray.append(start)
+        start = number+1
+
+    if len(missingNumberArray) > 0:
+        if len(missingNumberArray) == 1:
+            return missingNumberArray[0]
+        else:
+            return 2
+
+    return 0

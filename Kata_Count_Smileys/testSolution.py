@@ -2,7 +2,7 @@
 
 
 import unittest
-from solution import count_smileys
+from .solution import count_smileys
 
 
 class Tests(unittest.TestCase):
