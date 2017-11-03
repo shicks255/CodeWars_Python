@@ -56,11 +56,8 @@ def make_readable(seconds):
     else:
         secondString = str(seconds)
 
-    # print(hourString + ":" + minuteString + ":" + secondString)
     return hourString + ":" + minuteString + ":" + secondString
 
-# make_readable(359999)
-+
 # self.assert_equal(make_readable(0), "00:00:00")
 # self.assert_equal(make_readable(5), "00:00:05")
 # self.assert_equal(make_readable(60), "00:01:00")
