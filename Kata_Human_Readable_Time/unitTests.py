@@ -1,6 +1,6 @@
 # python! 3
 import unittest
-from .solution import make_readable
+from solution import make_readable
 
 
 class Tests(unittest.TestCase):
