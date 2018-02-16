@@ -4,6 +4,7 @@ import datetime
 import os
 import sys
 import time
+import pyperclip
 
 import bs4
 from selenium import webdriver
@@ -28,7 +29,12 @@ def get_district_url(notecards):
 # first argument is the google OTP key, second is the district to download
 if len(sys.argv) > 2:
     otp_key = str(sys.argv[1])
-    searchTerms = str(sys.argv[2])
+    searchTerms = ' '.join(sys.argv[2:])
+    # numberOfSearchTerms = len(sys.argv)
+    # search = numberOfSearchTerms - 2
+    # searchTerms = ''
+    # for i in range(search, numberOfSearchTerms, 1):
+    #     searchTerms = searchTerms + ' ' + sys.argv[i]
 
     print(otp_key)
     print(searchTerms)
@@ -43,6 +49,9 @@ soup = bs4.BeautifulSoup(goSheetUrl.read())
 notecardsFound = soup.select('div')
 
 url = get_district_url(notecardsFound)
+if not url:
+    print('No district found')
+    sys.exit()
 if len(url) > 0:
 
     # setting download location
@@ -96,7 +105,9 @@ if len(url) > 0:
     goodPath = os.path.abspath(downloadLocation)
     os.chdir(goodPath)
 
+    # get schema name and copy to clipboard for context.xml file
     schemaName = browser.find_element_by_id("schemaName").get_attribute("value")
+    pyperclip.copy(schemaName)
     dateTag = str(datetime.date.today())
 
     pathContents = os.listdir(goodPath)
@@ -106,6 +117,8 @@ if len(url) > 0:
         pathContents = os.listdir(goodPath)
 
     time.sleep(2)
+
+    browser.quit()
 
     # deleting the 2 old files if they exists
     oldData = schemaName + ".dmp"
