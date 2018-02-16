@@ -1,11 +1,13 @@
 # !python3
 
-import bs4
-import requests
-import sys
-import os
 import datetime
+import os
+import sys
+import time
+
+import bs4
 from selenium import webdriver
+
 
 def get_district_url(notecards):
     for card in notecards:
@@ -31,8 +33,11 @@ if len(sys.argv) > 2:
     print(otp_key)
     print(searchTerms)
 
-# searchTerms = 'woodbridge'
+if len(sys.argv) < 2:
+    print('Run the program again in the form of - load [OTP_KEY] [DISTRICT NAME]')
+    sys.exit()
 
+# Location of Go sheet
 goSheetUrl = open("C:\\Users\\steveh.AZEROTH\\Desktop\\goz.html")
 soup = bs4.BeautifulSoup(goSheetUrl.read())
 notecardsFound = soup.select('div')
@@ -40,15 +45,19 @@ notecardsFound = soup.select('div')
 url = get_district_url(notecardsFound)
 if len(url) > 0:
 
-    # setting download location'
+    # setting download location
     chromeOptions = webdriver.ChromeOptions()
     downloadLocation = "C:/k/backups"
     prefs = {"download.default_directory" : downloadLocation}
     chromeOptions.add_experimental_option("prefs", prefs)
     webdriverPath = "C:/Python\chromedriver.exe"
 
+    # Create Selenium WebDriver
     browser = webdriver.Chrome(executable_path = webdriverPath, chrome_options = chromeOptions)
     browser.get(url)
+
+    # wait a second
+    time.sleep(1)
 
     logonField = browser.find_element_by_id("logonid")
     passwordField = browser.find_element_by_id("password")
@@ -66,10 +75,13 @@ if len(url) > 0:
     submit2 = browser.find_element_by_id("secondFactorForm")
     submit2.submit()
 
+    # cleaning up the URLs of some non-ASP customers
+    if "schoolfi" not in url:
+        if url[-1] == "/":
+            url = url + "schoolfi"
+        else:
+            url = url + "/schoolfi"
     browser.get(url + "/control?tab1=system&tab2=backups&tab3=files&action=form")
-
-    schemaName = browser.find_element_by_id("schemaName").get_attribute("value")
-
 
     backupRows = browser.find_elements_by_class_name('listRowHighlight');
     dataRow = backupRows[0]
@@ -84,14 +96,26 @@ if len(url) > 0:
     goodPath = os.path.abspath(downloadLocation)
     os.chdir(goodPath)
 
+    schemaName = browser.find_element_by_id("schemaName").get_attribute("value")
     dateTag = str(datetime.date.today())
 
     pathContents = os.listdir(goodPath)
 
-    # wait until fire is fully downloaded
+    # wait until file is fully downloaded
     while any('crdownload' in dl for dl in pathContents):
         pathContents = os.listdir(goodPath)
 
+    time.sleep(2)
+
+    # deleting the 2 old files if they exists
+    oldData = schemaName + ".dmp"
+    oldDocs = schemaName + "-docs.dmp"
+    if any(oldDocs in docsFile for docsFile in os.listdir(goodPath)):
+        os.remove(oldDocs)
+    if any(oldData in file for file in os.listdir(goodPath)):
+        os.remove(oldData)
+
+    # renaming the files to SCHEME.dmp.bz2/-docs.dmp.bz2
     for pathItem in pathContents:
         if dateTag in pathItem:
             if "-docs.dmp.bz2" in pathItem:
@@ -106,7 +130,3 @@ if len(url) > 0:
 
     command = "impsfuser " + schemaName
     os.system("start /B start cmd.exe @cmd /k " + command)
-
-    webdriver.close()
-
-
