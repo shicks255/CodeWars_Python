@@ -118,6 +118,7 @@ if len(url) > 0:
 
     time.sleep(2)
 
+    browser.close()
     browser.quit()
 
     # deleting the 2 old files if they exists
