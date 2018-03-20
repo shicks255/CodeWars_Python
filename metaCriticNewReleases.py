@@ -2,8 +2,9 @@
 
 import requests
 import bs4
+import smtplib
 
-
+# Release Objects
 class Release(object):
     artist = ""
     album = ""
@@ -21,12 +22,12 @@ class Release(object):
     def __str__(self):
         return str(self.__dict__)
 
-
+# Function to make a release object from 4 parameters
 def make_release(artist, album, releaseDate, score):
     release = Release(artist.strip(), album.strip(), releaseDate.strip(), score.strip())
     return release
 
-
+# Start of logic here
 url = 'http://www.metacritic.com/browse/albums/release-date/new-releases/date'
 res = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
 res.raise_for_status()
@@ -62,7 +63,18 @@ for entry in entries:
         file.write(str(release)+"\n")
         listOfNewReleases.append(release)
 
+    for release in listOfNewReleases:
+        pass
+
 
 
 print(len(listOfNewReleases))
+
+# start the sending of emails
+smtpObj = smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465)
+smtpObj.ehlo()
+# smtpObj.starttls()
+smtpObj.login('shicks255@yahoo.com', )
+# for release in listOfNewReleases:
+
 
