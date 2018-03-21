@@ -1,8 +1,10 @@
 # !python3
+# coding=utf-8
 
 import requests
 import bs4
 import smtplib
+import datetime
 
 # Release Objects
 class Release(object):
@@ -74,7 +76,16 @@ print(len(listOfNewReleases))
 smtpObj = smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465)
 smtpObj.ehlo()
 # smtpObj.starttls()
-smtpObj.login('shicks255@yahoo.com', )
-# for release in listOfNewReleases:
+smtpObj.login('shicks255@yahoo.com', '')
 
+subject = "New releases as of " + datetime.datetime.now().strftime("%d-%m-%y %H:%M%p")
+body = "Artist - Album - Release Date - Score"
+for release in listOfNewReleases:
+    body += "\n<b>" + release.artist + "</b> " + release.album + " " + release.releaseDate + " <b>" + release.score + "</b>"
+
+print(subject)
+print(body)
+
+smtpObj.sendmail("shicks255@yahoo.com", "shicks255@yahoo.com", body.encode('utf-8'))
+smtpObj.quit()
 
