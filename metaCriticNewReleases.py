@@ -6,6 +6,9 @@ import bs4
 import smtplib
 import datetime
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 # Release Objects
 class Release(object):
     artist = ""
@@ -72,20 +75,25 @@ for entry in entries:
 
 print(len(listOfNewReleases))
 
-# start the sending of emails
-smtpObj = smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465)
-smtpObj.ehlo()
-# smtpObj.starttls()
-smtpObj.login('shicks255@yahoo.com', '')
 
 subject = "New releases as of " + datetime.datetime.now().strftime("%d-%m-%y %H:%M%p")
-body = "Artist - Album - Release Date - Score"
+
+text = ""
+text += "MIME-Version: 1.0"
+text += "Content-type: text/html"
+text += "Subject:{}\n\n".format(subject);
+text += "Artist - Album - Release Date - Score"
 for release in listOfNewReleases:
-    body += "\n<b>" + release.artist + "</b> " + release.album + " " + release.releaseDate + " <b>" + release.score + "</b>"
+    text += "\n<br/>" + release.artist + " " + release.album + " " + release.releaseDate + " " + release.score
 
-print(subject)
-print(body)
 
-smtpObj.sendmail("shicks255@yahoo.com", "shicks255@yahoo.com", body.encode('utf-8'))
+# start the sending of emails
+smtpObj = smtplib.SMTP('smtp.mail.yahoo.com', 587)
+smtpObj.set_debuglevel(1)
+smtpObj.ehlo()
+smtpObj.starttls()
+smtpObj.login('shicks255@yahoo.com', '')
+
+smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', text.encode('utf-8'))
 smtpObj.quit()
 
