@@ -7,6 +7,7 @@ import smtplib
 import datetime
 import email.message
 import os
+import sys
 
 # Release Objects
 class Release(object):
@@ -30,6 +31,13 @@ class Release(object):
 def make_release(artist, album, releaseDate, score):
     release = Release(artist.strip(), album.strip(), releaseDate.strip(), score.strip())
     return release
+
+# Function to replace/rename log with tempLog
+def close_log():
+    for line in open("log.txt", "r").readlines():
+        LOG_FILE.write(line)
+    LOG_FILE.close()
+    os.replace('tempLog.txt', 'log.txt')
 
 # Start of logic here
 
@@ -119,33 +127,33 @@ msg.set_payload(emailContent)
 try:
     smtpObj = smtplib.SMTP('smtp.mail.yahoo.com', 587)
 except smtplib.SMTPException as e:
-    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + e.args)
+    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + str(e.args))
     smtpObj.quit()
+    close_log()
+    sys.exit()
 
 smtpObj.ehlo()
 smtpObj.starttls()
 
 try:
     smtpObj.login('shicks255@yahoo.com', '')
-except smtplib.SMTPAuthenticationError:
-    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + e.args)
+except smtplib.SMTPAuthenticationError as e:
+    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + str(e.args))
     smtpObj.quit()
+    close_log()
+    sys.exit()
 
 message = msg.as_string().encode('utf-8')
 
 try:
     smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
-except smtplib.SMTPSenderRefused:
-    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + e.args )
+except smtplib.SMTPSenderRefused as e:
+    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + str(e.args))
     smtpObj.quit()
-
+    close_log()
+    sys.exit()
 
 smtpObj.quit()
 
 LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - ..........Finished")
-
-for line in open("log.txt", "r").readlines():
-    LOG_FILE.write(line)
-
-LOG_FILE.close()
-os.replace('tempLog.txt', 'log.txt')
+close_log()
