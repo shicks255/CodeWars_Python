@@ -5,9 +5,8 @@ import requests
 import bs4
 import smtplib
 import datetime
-
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import email.message
+import os
 
 # Release Objects
 class Release(object):
@@ -33,6 +32,11 @@ def make_release(artist, album, releaseDate, score):
     return release
 
 # Start of logic here
+
+# open log file
+LOG_FILE = open("tempLog.txt", "a")
+
+# get the reviews
 url = 'http://www.metacritic.com/browse/albums/release-date/new-releases/date'
 res = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
 res.raise_for_status()
@@ -71,29 +75,77 @@ for entry in entries:
     for release in listOfNewReleases:
         pass
 
-
-
 print(len(listOfNewReleases))
 
 
-subject = "New releases as of " + datetime.datetime.now().strftime("%d-%m-%y %H:%M%p")
+subject = "New releases as of " + datetime.datetime.now().strftime("%m-%d-%y %H:%M%p")
 
-text = ""
-text += "MIME-Version: 1.0"
-text += "Content-type: text/html"
-text += "Subject:{}\n\n".format(subject);
-text += "Artist - Album - Release Date - Score"
+emailContent = """
+    <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        </head>
+        <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Release Date</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+"""
+
+LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - Starting Metacritic Crawl.....")
+LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - Found " + str(len(listOfNewReleases)) + " new releases.")
+
 for release in listOfNewReleases:
-    text += "\n<br/>" + release.artist + " " + release.album + " " + release.releaseDate + " " + release.score
+    emailContent += "<tr><td><b>" + release.artist + "</b><td>" + release.album + "</td><td>" + release.releaseDate + "</td><td>" + release.score + "</td></tr>"
+    LOG_FILE.writable(".........." + str(release)+"\n")
 
+emailContent += "</tbody></table>"
+emailContent += "</body></html>"
+
+msg = email.message.Message()
+msg['SUBJECT'] = subject
+msg['From'] = 'shicks255@yahoo.com'
+msg['To'] = 'shicks255@yahoo.com'
+msg.add_header('Content-Type', 'text/html')
+msg.set_payload(emailContent)
 
 # start the sending of emails
-smtpObj = smtplib.SMTP('smtp.mail.yahoo.com', 587)
-smtpObj.set_debuglevel(1)
+try:
+    smtpObj = smtplib.SMTP('smtp.mail.yahoo.com', 587)
+except smtplib.SMTPException as e:
+    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + e.args)
+    smtpObj.quit()
+
 smtpObj.ehlo()
 smtpObj.starttls()
-smtpObj.login('shicks255@yahoo.com', '')
 
-smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', text.encode('utf-8'))
+try:
+    smtpObj.login('shicks255@yahoo.com', '')
+except smtplib.SMTPAuthenticationError:
+    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + e.args)
+    smtpObj.quit()
+
+message = msg.as_string().encode('utf-8')
+
+try:
+    smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
+except smtplib.SMTPSenderRefused:
+    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + e.args )
+    smtpObj.quit()
+
+
 smtpObj.quit()
 
+LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - ..........Finished")
+
+for line in open("log.txt", "r").readlines():
+    LOG_FILE.write(line)
+
+LOG_FILE.close()
+os.replace('tempLog.txt', 'log.txt')
