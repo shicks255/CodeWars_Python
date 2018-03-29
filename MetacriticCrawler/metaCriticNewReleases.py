@@ -8,6 +8,7 @@ import datetime
 import email.message
 import os
 import sys
+import unicodedata
 
 # Release Objects
 class Release(object):
@@ -29,20 +30,29 @@ class Release(object):
 
 # Function to make a release object from 4 parameters
 def make_release(artist, album, releaseDate, score):
-    release = Release(artist.strip(), album.strip(), releaseDate.strip(), score.strip())
+    release = Release(artist, album, releaseDate, score)
     return release
 
 # Function to replace/rename log with tempLog
 def close_log():
+    for line in reversed(log_messages):
+        LOG_FILE.write(line)
     for line in open("log.txt", "r").readlines():
         LOG_FILE.write(line)
     LOG_FILE.close()
-    os.replace('tempLog.txt', 'log.txt')
+    os.replace('tempLog.txt','log.txt')
+
+# Function to add something to logList
+def add_to_log(message):
+    messageToAdd = datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + message;
+    log_messages.append(messageToAdd)
 
 # Start of logic here
-
+os.chdir(sys.path[0])
 # open log file
 LOG_FILE = open("tempLog.txt", "a")
+log_messages = []
+add_to_log(" Info - Starting Metacritic Crawl....")
 
 # get the reviews
 url = 'http://www.metacritic.com/browse/albums/release-date/new-releases/date'
@@ -64,29 +74,25 @@ for entry in entries:
     for div in divs:
         if 'product_title' in div.get('class'):
             album = div.getText()
+            album = unicodedata.normalize('NFKD', album)
         if 'product_score' in div.get('class'):
             score = div.getText()
+            # score = unicodedata.normalize('NFKD', score).encode('ASCII', 'ignore')
         if div.find_all('li'):
             items = div.find_all('li')
             for item in items:
                 if 'product_artist' in item.get('class'):
                     artist = item.find('span', {"class": "data"}).getText()
+                    artist = unicodedata.normalize('NFKD', artist)
                 if 'release_date' in item.get('class'):
                     releaseDate = item.find('span', {"class": "data"}).getText()
+                    releaseDate = unicodedata.normalize('NFKD', releaseDate)
 
     release = make_release(artist, album, releaseDate, score)
 
     if str(release) not in open('newReleases.txt').read():
         file.write(str(release)+"\n")
         listOfNewReleases.append(release)
-
-    for release in listOfNewReleases:
-        pass
-
-print(len(listOfNewReleases))
-
-
-subject = "New releases as of " + datetime.datetime.now().strftime("%m-%d-%y %H:%M%p")
 
 emailContent = """
     <html>
@@ -106,16 +112,15 @@ emailContent = """
             <tbody>
 """
 
-LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - Starting Metacritic Crawl.....")
-LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - Found " + str(len(listOfNewReleases)) + " new releases.")
+add_to_log(" Info - Found " + str(len(listOfNewReleases)) + " new releases.")
 
 for release in listOfNewReleases:
     emailContent += "<tr><td><b>" + release.artist + "</b><td>" + release.album + "</td><td>" + release.releaseDate + "</td><td>" + release.score + "</td></tr>"
-    LOG_FILE.writable(".........." + str(release)+"\n")
+    add_to_log(".........." + str(release))
 
-emailContent += "</tbody></table>"
-emailContent += "</body></html>"
+emailContent += "</tbody></table></body></html>"
 
+subject = "New releases as of " + datetime.datetime.now().strftime("%m-%d-%y %H:%M%p")
 msg = email.message.Message()
 msg['SUBJECT'] = subject
 msg['From'] = 'shicks255@yahoo.com'
@@ -127,7 +132,7 @@ msg.set_payload(emailContent)
 try:
     smtpObj = smtplib.SMTP('smtp.mail.yahoo.com', 587)
 except smtplib.SMTPException as e:
-    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + str(e.args))
+    add_to_log(" ERROR - " + str(e.args))
     smtpObj.quit()
     close_log()
     sys.exit()
@@ -138,22 +143,23 @@ smtpObj.starttls()
 try:
     smtpObj.login('shicks255@yahoo.com', '')
 except smtplib.SMTPAuthenticationError as e:
-    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + str(e.args))
+    add_to_log(" ERROR - " + str(e.args))
     smtpObj.quit()
     close_log()
     sys.exit()
 
 message = msg.as_string().encode('utf-8')
 
-try:
-    smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
-except smtplib.SMTPSenderRefused as e:
-    LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " ERROR - " + str(e.args))
-    smtpObj.quit()
-    close_log()
-    sys.exit()
+if len(listOfNewReleases) > 0:
+    try:
+        smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
+    except smtplib.SMTPSenderRefused as e:
+        add_to_log(" ERROR - " + str(e.args))
+        smtpObj.quit()
+        close_log()
+        sys.exit()
 
 smtpObj.quit()
 
-LOG_FILE.write(datetime.datetime.now().strftime("\n%m-%d-%y %H:%M:%S:%f%p") + " Info - ..........Finished")
+add_to_log(" Info - ..........Finished.")
 close_log()
