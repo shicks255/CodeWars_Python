@@ -1,14 +1,15 @@
 # !python3
 # coding=utf-8
 
-import requests
-import bs4
-import smtplib
 import datetime
 import email.message
 import os
+import smtplib
 import sys
-import unicodedata
+
+import bs4
+import requests
+
 
 # Release Objects
 class Release(object):
@@ -65,6 +66,12 @@ entries = soup.select('.product_wrap')
 listOfNewReleases = []
 file = open("newReleases.txt", "a+")
 
+# start character encoding stuff
+# data = "UTF-8 DATA"
+# udata = data.decode('utf-8')
+# asciidata = udata.encode('ascii', 'ignore')
+
+
 for entry in entries:
     album = ""
     artist = ""
@@ -74,19 +81,19 @@ for entry in entries:
     for div in divs:
         if 'product_title' in div.get('class'):
             album = div.getText()
-            album = unicodedata.normalize('NFKD', album)
+            album = album.encode('ascii', errors='ignore').decode('ascii')
         if 'product_score' in div.get('class'):
             score = div.getText()
-            # score = unicodedata.normalize('NFKD', score).encode('ASCII', 'ignore')
+            score = score.encode('ascii', errors='ignore').decode('ascii')
         if div.find_all('li'):
             items = div.find_all('li')
             for item in items:
                 if 'product_artist' in item.get('class'):
                     artist = item.find('span', {"class": "data"}).getText()
-                    artist = unicodedata.normalize('NFKD', artist)
+                    artist = artist.encode('ascii', errors='ignore').decode('ascii')
                 if 'release_date' in item.get('class'):
                     releaseDate = item.find('span', {"class": "data"}).getText()
-                    releaseDate = unicodedata.normalize('NFKD', releaseDate)
+                    releaseDate = releaseDate.encode('ascii', errors='ignore').decode('ascii')
 
     release = make_release(artist, album, releaseDate, score)
 
@@ -124,7 +131,7 @@ subject = "New releases as of " + datetime.datetime.now().strftime("%m-%d-%y %H:
 msg = email.message.Message()
 msg['SUBJECT'] = subject
 msg['From'] = 'shicks255@yahoo.com'
-msg['To'] = 'shicks255@yahoo.com'
+msg['To'] = 'shicks255@yahoo.com, sperovich4@gmail.com'
 msg.add_header('Content-Type', 'text/html')
 msg.set_payload(emailContent)
 
@@ -152,7 +159,7 @@ message = msg.as_string().encode('utf-8')
 
 if len(listOfNewReleases) > 0:
     try:
-        smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
+        smtpObj.sendmail('shicks255@yahoo.com', ['sperovich4@gmail.com', 'shicks255@yahoo.com'], message)
     except smtplib.SMTPSenderRefused as e:
         add_to_log(" ERROR - " + str(e.args))
         smtpObj.quit()
