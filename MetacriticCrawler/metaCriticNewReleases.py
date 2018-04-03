@@ -64,7 +64,7 @@ soup = bs4.BeautifulSoup(res.text, "html.parser")
 entries = soup.select('.product_wrap')
 
 listOfNewReleases = []
-file = open("newReleases.txt", "a+")
+newReleasesFile = open("newReleases.txt", "a+")
 
 # start character encoding stuff
 # data = "UTF-8 DATA"
@@ -98,7 +98,7 @@ for entry in entries:
     release = make_release(artist, album, releaseDate, score)
 
     if str(release) not in open('newReleases.txt').read():
-        file.write(str(release)+"\n")
+        # newReleasesFile.write(str(release) + "\n")
         listOfNewReleases.append(release)
 
 emailContent = """
@@ -159,7 +159,8 @@ message = msg.as_string().encode('utf-8')
 
 if len(listOfNewReleases) > 0:
     try:
-        smtpObj.sendmail('shicks255@yahoo.com', ['sperovich4@gmail.com', 'shicks255@yahoo.com'], message)
+        smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
+        # smtpObj.sendmail('shicks255@yahoo.com', ['sperovich4@gmail.com', 'shicks255@yahoo.com'], message)
     except smtplib.SMTPSenderRefused as e:
         add_to_log(" ERROR - " + str(e.args))
         smtpObj.quit()
@@ -170,3 +171,9 @@ smtpObj.quit()
 
 add_to_log(" Info - ..........Finished.")
 close_log()
+
+# if no errors, append the new releases file
+for release in listOfNewReleases:
+    newReleasesFile.write(str(release) + "\n")
+
+sys.exit()
