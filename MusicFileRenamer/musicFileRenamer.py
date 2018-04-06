@@ -1,17 +1,14 @@
 # !python 3
 
-import os
 import sys
 from mutagen.id3 import ID3
 import mutagen
 from pathlib import Path
+import shutil
 
 
-# os.chdir("D:\\music\\Owen\\2001 - Owen\\")
-# mutagen.File("01 That Which Wasn't Said.mp3")
-
-# file = ID3("01 That Which Wasn't Said.mp3")
-
+# Used to clean up track numbers and print them the way that I like
+# For example 02 - Start Me Up.mp3
 def cleanUpTrackNumber(track):
     if ('/' in track):
         track = track[0:track.index('/')]
@@ -24,8 +21,68 @@ def cleanUpTrackNumber(track):
         track = track.replace(')', '')
         track = track[0:track.index(',')]
         return cleanUpTrackNumber(track)
-
     return track
+
+def handleMP3(musicFile, file):
+    track = ''
+    title = ''
+    if ('TRCK' in musicFile.keys()):
+        track = mutagen.id3.TRCK(musicFile.get('TRCK'))
+        track = str(track[0])
+        track = cleanUpTrackNumber(track)
+
+    if ('TIT2' in musicFile.keys()):
+        title = mutagen.id3.TIT2(musicFile.get('TIT2'))
+        title = str(title[0])
+
+    if (track and title):
+        newTitle = track + " - " + title;
+        indexOfLastDot = file.name.rfind('.')
+        newTitle = newTitle + file.name[indexOfLastDot:]
+        renameFile(file, newTitle)
+
+def handleMP4(musicFile, file):
+    track = ''
+    title = ''
+    if ('trkn' in musicFile.keys()):
+        track = musicFile.get('trkn')[0]
+        track = str(track)
+        track = cleanUpTrackNumber(track)
+    if ('©nam' in musicFile.keys()):
+        title = musicFile.get('©nam')[0]
+
+    if (track and title):
+        newTitle = str(track) + " - " + str(title)
+        indexOfLastDot = file.name.rfind('.')
+        newTitle = newTitle + file.name[indexOfLastDot:]
+        renameFile(file, newTitle)
+
+def handleWMA(musicFile, file):
+    if ('WM/TrackNumber' in musicFile.keys()):
+        track = str(musicFile.get('WM/TrackNumber')[0])
+        track = cleanUpTrackNumber(track)
+    if ('Title' in musicFile.keys()):
+        title = str(musicFile.get('Title')[0])
+
+    if (track and title):
+        newTitle = track + " - " + title
+        indexOfLastDot = file.name.rfind('.')
+        newTitle = newTitle + file.name[indexOfLastDot:]
+        renameFile(file, newTitle)
+
+def renameFile(file, newTitle):
+    if (file.name != newTitle):
+        newTitle = newTitle.replace('?', '')
+        newTitle = newTitle.replace(':', '')
+        newTitle = newTitle.replace('*', '')
+        newTitle = newTitle.replace('/', '')
+        newTitle = newTitle.replace('\\', '')
+        newTitle = newTitle.replace('_', '\s')
+        newTitle.strip()
+        oldPath = str(Path(file).absolute())
+        newPath = str(Path(file).absolute().parent) + "\\" + newTitle
+        print("renaming " + file.name + " to " + newTitle)
+        shutil.move(oldPath, newPath)
 
 def doSomething(path):
     for x in path.iterdir():
@@ -35,52 +92,17 @@ def doSomething(path):
         if (x.is_file()):
             musicFile = mutagen.File(Path.absolute(x))
             if (musicFile and type(musicFile) == mutagen.mp3.MP3):
-                values = musicFile.values()
-                track = ''
-                title = ''
-                if ('TRCK' in musicFile.keys()):
-                    track = mutagen.id3.TRCK(musicFile.get('TRCK'))
-                    track = str(track[0])
-                    track = cleanUpTrackNumber(track)
-
-                if ('TIT2' in musicFile.keys()):
-                    title = mutagen.id3.TIT2(musicFile.get('TIT2'))
-                    title = str(title[0])
-                # if ('TPE1' in musicFile.keys()):
-                #     artist = mutagen.id3.TPE1(musicFile.get('TPE1'))
-
-                if (track and title):
-                    newTitle = track + " - " + title;
-                    print(newTitle)
+                handleMP3(musicFile, x)
 
             if (musicFile and type(musicFile) == mutagen.mp4.MP4):
-                track = ''
-                title = ''
-                if ('trkn' in musicFile.keys()):
-                    track = musicFile.get('trkn')[0]
-                    track = str(track)
-                    track = cleanUpTrackNumber(track)
-                if ('©nam' in musicFile.keys()):
-                    title = musicFile.get('©nam')[0]
-
-                if (track and title):
-                    newTitle = str(track) + " - " + str(title)
-                    print(newTitle)
+                handleMP4(musicFile, x)
 
             if (musicFile and type(musicFile) == mutagen.asf.ASF):
-                if ('WM/TrackNumber' in musicFile.keys()):
-                    track = str(musicFile.get('WM/TrackNumber')[0])
-                    track = cleanUpTrackNumber(track)
-                if ('Title' in musicFile.keys()):
-                    title = str(musicFile.get('Title')[0])
-
-                if (track and title):
-                    newTitle = track + " - " + title
-                    print(newTitle)
+                handleWMA(musicFile, x)
 
 
-path = Path('D:\\Music\\');
-print(sys.path[0])
+path = Path(sys.path[0])
+print("Starting tree traversal in current path: " + sys.path[0])
 doSomething(path)
 
 
