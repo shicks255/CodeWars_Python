@@ -1,6 +1,7 @@
 # !python 3
 
 import sys
+import os
 from mutagen.id3 import ID3
 import mutagen
 from pathlib import Path
@@ -70,14 +71,31 @@ def handleWMA(musicFile, file):
         newTitle = newTitle + file.name[indexOfLastDot:]
         renameFile(file, newTitle)
 
+def handleFLAC(musicFile, file):
+    track = ''
+    title = ''
+    if ('tracknumber' in musicFile.keys()):
+        track = str(musicFile.get('tracknumber')[0])
+        track = cleanUpTrackNumber(track)
+    if ('title' in musicFile.keys()):
+        title = str(musicFile.get('title')[0])
+
+    if (track and title):
+        newTitle = track + " - " + title
+        indexOfLastDot = file.name.rfind('.')
+        newTitle = newTitle + file.name[indexOfLastDot:]
+        renameFile(file, newTitle)
+
 def renameFile(file, newTitle):
     if (file.name != newTitle):
         newTitle = newTitle.replace('?', '')
         newTitle = newTitle.replace(':', '')
         newTitle = newTitle.replace('*', '')
         newTitle = newTitle.replace('/', '')
-        newTitle = newTitle.replace('\\', '')
-        newTitle = newTitle.replace('_', '\s')
+        newTitle = newTitle.replace('"', '')
+        newTitle = newTitle.replace('_', '')
+        newTitle = newTitle.replace('<', '')
+        newTitle = newTitle.replace('>', '')
         newTitle.strip()
         oldPath = str(Path(file).absolute())
         newPath = str(Path(file).absolute().parent) + "\\" + newTitle
@@ -100,8 +118,10 @@ def doSomething(path):
             if (musicFile and type(musicFile) == mutagen.asf.ASF):
                 handleWMA(musicFile, x)
 
+            if (musicFile and type(musicFile) == mutagen.flac.FLAC):
+                handleFLAC(musicFile, x)
 
-path = Path(sys.path[0])
+path = Path(os.curdir)
 print("Starting tree traversal in current path: " + sys.path[0])
 doSomething(path)
 
