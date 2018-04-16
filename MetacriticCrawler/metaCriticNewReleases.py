@@ -19,19 +19,18 @@ class Release(object):
     score = ""
 
     # Constructor
-    def __init__(self, artist, album, releaseDate, score):
+    def __init__(self, artist, album, releaseDate):
         self.artist = artist
         self.album = album
         self.releaseDate = releaseDate
-        self.score = score
 
     # to string
     def __str__(self):
         return str(self.__dict__)
 
 # Function to make a release object from 4 parameters
-def make_release(artist, album, releaseDate, score):
-    release = Release(artist, album, releaseDate, score)
+def make_release(artist, album, releaseDate):
+    release = Release(artist, album, releaseDate)
     return release
 
 # Function to replace/rename log with tempLog
@@ -95,11 +94,11 @@ for entry in entries:
                     releaseDate = item.find('span', {"class": "data"}).getText()
                     releaseDate = releaseDate.encode('ascii', errors='ignore').decode('ascii')
 
-    release = make_release(artist, album, releaseDate, score)
+    fileRelease = make_release(artist, album, releaseDate)
 
-    if str(release) not in open('newReleases.txt').read():
+    if str(fileRelease) not in open('newReleases.txt').read():
         # newReleasesFile.write(str(release) + "\n")
-        listOfNewReleases.append(release)
+        listOfNewReleases.append(fileRelease)
 
 emailContent = """
     <html>
@@ -159,8 +158,8 @@ message = msg.as_string().encode('utf-8')
 
 if len(listOfNewReleases) > 0:
     try:
-        smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
-        # smtpObj.sendmail('shicks255@yahoo.com', ['sperovich4@gmail.com', 'shicks255@yahoo.com'], message)
+        # smtpObj.sendmail('shicks255@yahoo.com', 'shicks255@yahoo.com', message)
+        smtpObj.sendmail('shicks255@yahoo.com', ['sperovich4@gmail.com', 'shicks255@yahoo.com'], message)
     except smtplib.SMTPSenderRefused as e:
         add_to_log(" ERROR - " + str(e.args))
         smtpObj.quit()
