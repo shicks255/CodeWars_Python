@@ -109,20 +109,20 @@ def doSomething(path):
             doSomething(x)
         if (x.is_file()):
             musicFile = mutagen.File(Path.absolute(x))
-            if (musicFile and type(musicFile) == mutagen.mp3.MP3):
+            if type(musicFile) == mutagen.mp3.MP3:
                 handleMP3(musicFile, x)
 
-            if (musicFile and type(musicFile) == mutagen.mp4.MP4):
+            if type(musicFile) == mutagen.mp4.MP4:
                 handleMP4(musicFile, x)
 
-            if (musicFile and type(musicFile) == mutagen.asf.ASF):
+            if type(musicFile) == mutagen.asf.ASF:
                 handleWMA(musicFile, x)
 
-            if (musicFile and type(musicFile) == mutagen.flac.FLAC):
+            if type(musicFile) == mutagen.flac.FLAC:
                 handleFLAC(musicFile, x)
 
-path = Path(os.curdir)
-print("Starting tree traversal in current path: " + sys.path[0])
+path = Path(os.getcwd())
+print("Starting tree traversal in current path: " + os.getcwd())
 doSomething(path)
 
 
