@@ -1,6 +1,8 @@
 # !python3
 
 import time
+import selenium
+import sys
 from selenium import webdriver
 
 url = 'https://www.bing.com/'
@@ -19,8 +21,13 @@ browser.get(url)
 time.sleep(3)
 
 # find button to download image of day
-submit = browser.find_element_by_id('vs_bs_download')
-submit.click()
+try:
+    submit = browser.find_element_by_id('vs_bs_fffdownload')
+    submit.click()
+except selenium.common.exceptions.NoSuchElementException as e:
+    browser.close()
+    browser.quit()
+    sys.exit()
 
 # sleep for ten seconds before closing browser stuff
 # just to make sure picture was finished downloading

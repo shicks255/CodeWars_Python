@@ -1,11 +1,11 @@
 # !python 3
 
-import sys
 import os
-from mutagen.id3 import ID3
-import mutagen
-from pathlib import Path
 import shutil
+from pathlib import Path
+
+import mutagen
+from mutagen.id3 import ID3
 
 
 # Used to clean up track numbers and print them the way that I like
