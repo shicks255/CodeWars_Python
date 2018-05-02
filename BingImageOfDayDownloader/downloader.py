@@ -18,13 +18,14 @@ browser = webdriver.Chrome(executable_path = webdriverPath, chrome_options = chr
 browser.get(url)
 
 # wait a second
-time.sleep(3)
+time.sleep(5)
 
 # find button to download image of day
 try:
-    submit = browser.find_element_by_id('vs_bs_fffdownload')
+    submit = browser.find_element_by_id('vs_bs_download')
     submit.click()
 except selenium.common.exceptions.NoSuchElementException as e:
+    print('element not found')
     browser.close()
     browser.quit()
     sys.exit()
