@@ -4,6 +4,7 @@ import time
 import selenium
 import sys
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 url = 'https://www.bing.com/'
 
@@ -18,7 +19,18 @@ browser = webdriver.Chrome(executable_path = webdriverPath, chrome_options = chr
 browser.get(url)
 
 # wait a second
-time.sleep(5)
+time.sleep(2)
+
+# Scroll down a bit
+html = browser.find_element_by_tag_name("html");
+html.send_keys(Keys.DOWN)
+time.sleep(3)
+html.send_keys(Keys.DOWN)
+time.sleep(3)
+html.send_keys(Keys.DOWN)
+time.sleep(3)
+html.send_keys(Keys.DOWN)
+time.sleep(3)
 
 # find button to download image of day
 try:
