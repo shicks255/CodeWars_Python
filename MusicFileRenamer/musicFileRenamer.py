@@ -8,6 +8,11 @@ import mutagen
 from mutagen.id3 import ID3
 
 
+# Program to rename all music files to the way i like it, with the track number - song title
+# padded with an extra zero for tracks under 10
+# To be called from the directory that is the root of all the music, D:\Music for me
+
+
 # Used to clean up track numbers and print them the way that I like
 # For example 02 - Start Me Up.mp3
 def cleanUpTrackNumber(track):
