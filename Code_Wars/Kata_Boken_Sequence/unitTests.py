@@ -1,7 +1,7 @@
 #! python3
 
 import unittest
-from Kata_Boken_Sequence.solution import find_missing_number
+from Code_Wars.Kata_Boken_Sequence.solution import find_missing_number
 
 
 class Tests(unittest.TestCase):
