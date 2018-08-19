@@ -15,8 +15,6 @@ soup = bs4.BeautifulSoup(response.text, "html.parser")
 
 
 
-
-
 #start email logic
 emailContent = """
     <html>
