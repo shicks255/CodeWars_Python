@@ -5,6 +5,7 @@ import bs4
 import email.message
 import smtplib
 import sys
+import CraigslistCrawler.CraigstlistPost
 
 # start logic of loading craigslist page
 urlString = "https://cnj.craigslist.org/"
