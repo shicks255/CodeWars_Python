@@ -7,11 +7,43 @@ import smtplib
 import sys
 import CraigslistCrawler.CraigstlistPost
 
+baseUrl = "https://cnj.craigslist.org/search/"
+
+def searchACategory(catCode):
+    catUrl = baseUrl + catCode + '?'
+    response = requests.get(catUrl, headers={'User-Agent': 'Mozilla/5.0'})
+    response.raise_for_status()
+    soup = bs4.BeautifulSoup(response.text, "html.parser")
+    posts = soup.select('.result-row')
+    return posts
+
 # start logic of loading craigslist page
-urlString = "https://cnj.craigslist.org/"
-response = requests.get(urlString, headers={'User-Agent': 'Mozilla/5.0'})
-response.raise_for_status()
-soup = bs4.BeautifulSoup(response.text, "html.parser")
+# urlString = "https://cnj.craigslist.org/"
+# response = requests.get(urlString, headers={'User-Agent': 'Mozilla/5.0'})
+# response.raise_for_status()
+# soup = bs4.BeautifulSoup(response.text, "html.parser")
+#
+# posts = soup.select('.rows')
+
+somePosts = searchACategory('sof')
+for post in somePosts:
+    title = ''
+    date = ''
+    location = ''
+    price = ''
+    url = ''
+    subcategory = ''
+    category = ''
+    p = post.select_one('.result-info').getText
+    date = post.select_one('.result-info').select_one('time').getText()
+    title = post.select_one('.result-info').select_one('a').getText()
+    url = post.select_one('.result-info').select_one('a["href"]').get('href')
+    meta = post.select_one('.result-meta')
+
+    if ('.result-hood' in meta.select('.result-hood')):
+        location = meta.select_one('.result-hood').getText()
+    price = ''
+
 
 
 
