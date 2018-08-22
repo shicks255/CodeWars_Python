@@ -5,7 +5,7 @@ import bs4
 import email.message
 import smtplib
 import sys
-import CraigslistCrawler.CraigstlistPost
+import CraigslistCrawler.craigstlistPost as cpost
 
 baseUrl = "https://cnj.craigslist.org/search/"
 
@@ -17,16 +17,7 @@ def searchACategory(catCode):
     posts = soup.select('.result-row')
     return posts
 
-# start logic of loading craigslist page
-# urlString = "https://cnj.craigslist.org/"
-# response = requests.get(urlString, headers={'User-Agent': 'Mozilla/5.0'})
-# response.raise_for_status()
-# soup = bs4.BeautifulSoup(response.text, "html.parser")
-#
-# posts = soup.select('.rows')
-
-somePosts = searchACategory('sof')
-for post in somePosts:
+def transformPost(post):
     title = ''
     date = ''
     location = ''
@@ -40,11 +31,28 @@ for post in somePosts:
     url = post.select_one('.result-info').select_one('a["href"]').get('href')
     meta = post.select_one('.result-meta')
 
-    if ('.result-hood' in meta.select('.result-hood')):
-        location = meta.select_one('.result-hood').getText()
-    price = ''
+    if (meta.select_one('.result-hood') is not None):
+        location = meta.select_one('.result-hood').get_text()
+    if (meta.select_one('.result-price') is not None):
+        price = meta.select_one('.result-price').get_text()
 
+    p = cpost.CraigslistPost(url, title, date)
+    p.location = location
+    p.price = price
+    p.category = category
+    p.subcategory = subcategory
 
+# start logic of loading craigslist page
+# urlString = "https://cnj.craigslist.org/"
+# response = requests.get(urlString, headers={'User-Agent': 'Mozilla/5.0'})
+# response.raise_for_status()
+# soup = bs4.BeautifulSoup(response.text, "html.parser")
+#
+# posts = soup.select('.rows')
+
+somePosts = searchACategory('sof')
+listOfPosts = []
+listOfPosts.extend(list(map(lambda x: transformPost(x), somePosts)))
 
 
 #start email logic
