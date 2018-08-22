@@ -10,12 +10,6 @@ class CraigslistPost(object):
     subcategory = ''
     price = ''
 
-    #Constructor
-    def __init__(self, url, title, postDate):
-        self.url = url
-        self.title = title
-        self.postDate = postDate
-
     # Constructor
     def __init__(self, url, title, postDate, location, category, subcategory, price):
         self.url = url

@@ -6,6 +6,7 @@ import email.message
 import smtplib
 import sys
 import CraigslistCrawler.craigstlistPost as cpost
+import CraigslistCrawler.Categories as cats
 
 baseUrl = "https://cnj.craigslist.org/search/"
 
@@ -17,42 +18,35 @@ def searchACategory(catCode):
     posts = soup.select('.result-row')
     return posts
 
-def transformPost(post):
+def transformPost(post, category, subcategory):
     title = ''
     date = ''
     location = ''
     price = ''
     url = ''
-    subcategory = ''
-    category = ''
-    p = post.select_one('.result-info').getText
-    date = post.select_one('.result-info').select_one('time').getText()
-    title = post.select_one('.result-info').select_one('a').getText()
-    url = post.select_one('.result-info').select_one('a["href"]').get('href')
-    meta = post.select_one('.result-meta')
+    if (post.select_one('.result-info') is not None):
+        resultInfo = post.select_one('.result-info')
+        if (resultInfo.select_one('time') is not None):
+            date = resultInfo.select_one('time').getText()
+        if (resultInfo.select_one('a') is not None):
+            title = resultInfo.select_one('a').getText()
+        if (resultInfo.select_one('a["href"]') is not None):
+            url = resultInfo.select_one('a["href"]').get('href')
 
+    meta = post.select_one('.result-meta')
     if (meta.select_one('.result-hood') is not None):
         location = meta.select_one('.result-hood').get_text()
     if (meta.select_one('.result-price') is not None):
         price = meta.select_one('.result-price').get_text()
 
-    p = cpost.CraigslistPost(url, title, date)
-    p.location = location
-    p.price = price
-    p.category = category
-    p.subcategory = subcategory
+    return cpost.CraigslistPost(url, title, date, location, category, subcategory, price)
 
-# start logic of loading craigslist page
-# urlString = "https://cnj.craigslist.org/"
-# response = requests.get(urlString, headers={'User-Agent': 'Mozilla/5.0'})
-# response.raise_for_status()
-# soup = bs4.BeautifulSoup(response.text, "html.parser")
-#
-# posts = soup.select('.rows')
+listOfPostObjects = []
+categories = cats.categories
 
-somePosts = searchACategory('sof')
-listOfPosts = []
-listOfPosts.extend(list(map(lambda x: transformPost(x), somePosts)))
+for cat in categories:
+    posts = searchACategory(cat[2])
+    listOfPostObjects.extend(list(map(lambda x: transformPost(x, cat[0], cat[1]), posts)))
 
 
 #start email logic
