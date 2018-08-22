@@ -65,12 +65,6 @@ entries = soup.select('.product_wrap')
 listOfNewReleases = []
 newReleasesFile = open("newReleases.txt", "a+")
 
-# start character encoding stuff
-# data = "UTF-8 DATA"
-# udata = data.decode('utf-8')
-# asciidata = udata.encode('ascii', 'ignore')
-
-
 for entry in entries:
     album = ""
     artist = ""
@@ -97,7 +91,6 @@ for entry in entries:
     fileRelease = make_release(artist, album, releaseDate)
 
     if str(fileRelease) not in open('newReleases.txt').read():
-        # newReleasesFile.write(str(release) + "\n")
         listOfNewReleases.append(fileRelease)
 
 emailContent = """
