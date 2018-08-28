@@ -59,14 +59,42 @@ emailContent = """
         <table>
             <thead>
                 <tr>
-                    <th></th>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
-        
-        </table>
-            
+"""
 
+
+category = ''
+subcategory = ''
+for post in listOfPostObjects:
+    if category != post.category or subcategory != post.subcategory:
+        category = post.category
+        subcategory = post.subcategory
+        emailContent += """
+        <tr>
+            <td colspan="4"><b>""" + category + "-" + subcategory +"""</b></td>
+        </tr>
+        """
+
+    emailContent += """
+        <tr>
+            <td>""" + post.title + """"</td>
+            <td>""" + post.postDate + """"</td>
+            <td>""" + post.location + """"</td>
+            <td>""" + post.price + """"</td>
+        </tr>
+    """
+
+emailContent += """
+            </tbody>
+        </table>
+        </body>
+    </html>
 """
 
 subject = "Craigslist Stuff"
