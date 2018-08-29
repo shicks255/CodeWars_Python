@@ -56,13 +56,13 @@ emailContent = """
             <meta http-equiv="Content=TYPE" content="text/html; charset=utf-8">
         </head>
         <body>
-        <table>
+        <table style="width: 200px;">
             <thead>
                 <tr>
-                    <th>Title</th>
                     <th>Date</th>
                     <th>Location</th>
                     <th>Price</th>
+                    <th>Title</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,20 +75,9 @@ for post in listOfPostObjects:
     if category != post.category or subcategory != post.subcategory:
         category = post.category
         subcategory = post.subcategory
-        emailContent += """
-        <tr>
-            <td colspan="4"><b>""" + category + "-" + subcategory +"""</b></td>
-        </tr>
-        """
+        emailContent += '<tr><td colspan="4"><b>' + category + "-" + subcategory + "</b></td></tr>"
 
-    emailContent += """
-        <tr>
-            <td>""" + post.title + """"</td>
-            <td>""" + post.postDate + """"</td>
-            <td>""" + post.location + """"</td>
-            <td>""" + post.price + """"</td>
-        </tr>
-    """
+    emailContent += "<tr><td>" + post.postDate + "</td><td>" + post.location + "</td><td>" + post.price + "</td><td>" + post.title + "</td></tr>"
 
 emailContent += """
             </tbody>
