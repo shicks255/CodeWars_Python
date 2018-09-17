@@ -97,6 +97,7 @@ def renameFile(file, newTitle):
         newTitle = newTitle.replace(':', '')
         newTitle = newTitle.replace('*', '')
         newTitle = newTitle.replace('/', '')
+        newTitle = newTitle.replace('\\', '_')
         newTitle = newTitle.replace('"', '')
         newTitle = newTitle.replace('_', '')
         newTitle = newTitle.replace('<', '')
