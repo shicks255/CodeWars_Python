@@ -6,6 +6,7 @@ import requests
 
 # this is the URl that will print a list of search results
 url = 'https://www.ultimate-guitar.com/search.php?search_type=title&value='
+# url = 'https://www.ultimate-guitar.com/artist/slayer_459'
 artistQuery = 'Slayer'
 artistQuery = artistQuery.lower()
 
@@ -14,19 +15,22 @@ res.raise_for_status()
 soup = bs4.BeautifulSoup(res.text, 'html.parser')
 results = soup.prettify()
 
-start = results.find('{\"artist_name\":')
-end = results.find('header_bidding')
-results = results[start:end]
+# start = results.find('{\"artist_name\":')
+# end = results.find('header_bidding')
+# results = results[start:end]
 
-regex = re.compile('\{"id":.*\]\}\}')
-mo = regex.findall(results)
+# to get the tabs
+# regex = re.compile('(\{\"id\":)(.*?)((\]\}\}))')
+# to get the artist url when searching for artist
+regex = re.compile('artist/(.*?)\"')
+mo = regex.search(results)
 
-print(results)
-# class that is in the search results 'link-secondary _1kcZ5'
+if mo:
+    print(mo.groups())
 
-# artistSearchResults = soup.findAll('a', {'class':['link-secondary', '_1kcZ5']})
-artistSearchResults = soup.find_all('tab_url')
-print(artistSearchResults)
-for x in artistSearchResults:
-    print(x)
+
+
+
+
+
 
