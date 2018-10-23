@@ -1,6 +1,7 @@
 # !python3
 import re
 import sys
+import psycopg2
 
 import bs4
 import requests
@@ -19,7 +20,6 @@ class Tab(object):
     tuning = ''
     typeName = ''
     ugId = ''
-
 
 # https://www.ultimate-guitar.com/explore?type[]=Chords
 # https://www.ultimate-guitar.com/explore?type[]=Tabs
@@ -76,7 +76,7 @@ if mo:
         tab.tabUrl = tabUrl
         tab.tuning = tuning
         tab.typeName = typeName
-        tab.id = id
+        tab.ugId = id
 
         url = tabUrl.replace('\\', '')
         res = requests.get(url, headers={'User-agent': 'Mozilla/5.0'})
@@ -93,11 +93,30 @@ if mo:
 
     TAB_FILE = open('slayerTabsPage1.html', 'a')
 
-    for t in payloadTabs:
-        TAB_FILE.write('<h3>Artist: '  + t.artistName + '</h3>')
-        TAB_FILE.write('<h4>Song: ' + t.songTitle + '</h4>')
-        TAB_FILE.write('<pre>' + t.content + '</pre>')
-        TAB_FILE.write('<br/>')
+    try:
+        conn = psycopg2.connect(host="localhost", database="guitarTabs", user="postgres", password="")
+        cursor = conn.cursor()
+        # cursor.execute("select version()")
+        # data = cursor.fetchone()
+
+        for t in payloadTabs:
+
+            sql = 'insert into tab(artist, title, content, author_id) values(%s,%s,%s,%s) ;'
+            cursor.execute(sql, (t.artistName, t.songTitle, t.content, t.ugId))
+
+            TAB_FILE.write('<h3>Artist: '  + t.artistName + '</h3>')
+            TAB_FILE.write('<h4>Song: ' + t.songTitle + '</h4>')
+            TAB_FILE.write('<div style="white-space: pre-wrap;">' + t.content + '</div>')
+            TAB_FILE.write('<br/>')
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close();
+
+
+
 
     TAB_FILE.close()
 
