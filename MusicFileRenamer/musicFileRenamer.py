@@ -103,6 +103,7 @@ def renameFile(file, newTitle):
         newTitle = newTitle.replace('<', '')
         newTitle = newTitle.replace('>', '')
         newTitle.strip()
+        newTitle.title()
         oldPath = str(Path(file).absolute())
         newPath = str(Path(file).absolute().parent) + "\\" + newTitle
         print("renaming " + file.name + " to " + newTitle)
@@ -128,6 +129,7 @@ def doSomething(path):
                 handleFLAC(musicFile, x)
 
 path = Path(os.getcwd())
+# path = Path("C:\\Users\\shick\\desktop\\cash")
 print("Starting tree traversal in current path: " + os.getcwd())
 doSomething(path)
 

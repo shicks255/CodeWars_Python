@@ -94,7 +94,7 @@ if mo:
     TAB_FILE = open('slayerTabsPage1.html', 'a')
 
     try:
-        conn = psycopg2.connect(host="localhost", database="guitarTabs", user="postgres", password="")
+        conn = psycopg2.connect(host="localhost", database="guitarTabs", user="postgres", password="ashley")
         cursor = conn.cursor()
         # cursor.execute("select version()")
         # data = cursor.fetchone()
