@@ -7,6 +7,7 @@ from PIL import Image
 
 map = {}
 
+
 def traversePath(path):
     for file in path.iterdir():
         if (file.is_dir()):
@@ -22,6 +23,7 @@ def traversePath(path):
                     print(err)
                     pass
 
+
 def comparePixels(pixelList1, pixelList2):
     numberOfMisses = 0
     length1 = len(pixelList1)
@@ -30,7 +32,7 @@ def comparePixels(pixelList1, pixelList2):
         return False
 
     # 1/20th of the pixels are off
-    missThreshhold = int(length1/50)
+    missThreshhold = int(length1 / 50)
     for x in range(length1):
         rgb1 = pixelList1[x]
         rgb2 = pixelList2[x]
@@ -46,16 +48,14 @@ def comparePixels(pixelList1, pixelList2):
             return False
     return True
 
+
 path = Path(os.getcwd())
 print('Starting duplicate image finder in ' + str(path))
 traversePath(path)
 
 for fileItem in map:
-    pixelValues = map[fileItem];
+    pixelValues = map[fileItem]
     for fi in map:
         if fileItem != fi:
             if comparePixels(pixelValues, map[fi]):
                 print('Possible Match: ' + str(fileItem) + ' and ' + str(fi))
-
-
-
