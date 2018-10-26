@@ -2,6 +2,7 @@
 
 import os
 import sys
+import gc
 import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -36,8 +37,9 @@ def traversePath(path: Path):
             traversePath(file)
         if (file.is_file()):
             filename_data: Tuple[str, str] = os.path.splitext(file)
-            filename, ext = os.path.splitext(file)
+            # filename, ext = os.path.splitext(file)
             ext: str = filename_data[1]
+            filename: str = filename_data[0]
             if ext.lower() == '.jpg' or ext.lower() == '.jpeg' or ext.lower() == '.png':
                 try:
                     img: Image = Image.open(file)
@@ -45,7 +47,7 @@ def traversePath(path: Path):
                     # values: List = list(img.getdata())
                     # print(get_size(values))
                     # map[filename] = values
-                    print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - adding file ' + filename)
+                    # print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - adding file ' + filename)
                 except IOError as err:
                     print(err)
                     pass
@@ -75,16 +77,23 @@ def comparePixels(image1: Image, image2: Image):
         if pixelDifference > 100:
             numberOfMisses += 1
         if numberOfMisses > missThreshhold:
+            del values1
+            del values2
             return False
+
+    del values1
+    del values2
     return True
 
-path: Path = Path('F:\\backgrounds_autumn')
+path: Path = Path('F:\\backgrounds_winter')
 # path: Path = Path(os.getcwd())
 
 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Starting duplicate image finder in ' + str(path))
 traversePath(path)
 
 for fileName in map:
+    collected: int = gc.collect()
+    print('Garbage Collected ' + str(collected) + ' objects')
     img: Image = map[fileName];
     for fn in map:
         if fileName != fn:
