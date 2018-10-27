@@ -140,7 +140,7 @@ smtpObj.ehlo()
 smtpObj.starttls()
 
 try:
-    smtpObj.login('shicks255@yahoo.com', '')
+    smtpObj.login('shicks255@yahoo.com', 'Unreal255Backset!1')
 except smtplib.SMTPAuthenticationError as e:
     add_to_log(" ERROR - " + str(e.args))
     smtpObj.quit()
