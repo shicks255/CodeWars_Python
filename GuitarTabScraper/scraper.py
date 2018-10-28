@@ -25,15 +25,27 @@ MAIN_URL = 'https://www.ultimate-guitar.com/'
 
 # search the entered Artist arg for a URl to start scraping on.
 def getArtistURL(artistName):
-    res = requests.get(MAIN_URL + 'search.php?search_type=title&value=' + artistName)
+    artistName = artistName.replace(' ', '%20')
+    res = requests.get(MAIN_URL + 'search.php?search_type=band&value=' + artistName)
     res.raise_for_status()
     soup = bs4.BeautifulSoup(res.text, 'html.parser')
     results = soup.prettify()
 
-    regex = re.compile('(\"results\":)(.*?)}}]}')
+    # regex = re.compile('\"artist_name\":(.*?)\"tabs_cnt\"')
+    regex = re.compile('(\"results\":.*?}}]})')
     mo = regex.search(results)
     if mo:
-        textChunk = str(mo.groups())
+        artistResults = str(mo.groups())
+        regex2 = re.compile('{(.*?)]}}')
+        mo2 = regex2.findall(artistResults)
+        for x in mo2:
+            print(x)
+            thisArtistNameIndex = x.find('\"artist_name\":')
+            thisArtistName = x[thisArtistNameIndex+15 : x.find('\"artist_url\"')-2]
+            if thisArtistName.lower() == artistName.lower():
+                thisArtistUrlIndex = x.find('\"artist_url\"')
+                thisArtistUrl = x[thisArtistUrlIndex+15 : x.find('\"tabs_cnt\"')-2]
+                print(thisArtistUrl)
 
 
 # this is where the heavy lifting is done, remember to add CHORDS
