@@ -53,6 +53,11 @@ def traversePath(path: Path):
                     print(err)
                     pass
 
+def comparePixels(pixelList1, pixelList2):
+    numberOfMisses = 0
+    length1 = len(pixelList1)
+    length2 = len(pixelList2)
+
 def comparePixels2(image1: Image, image2: Image):
     stat1: ImageStat = ImageStat.Stat(image1)
     stat2: ImageStat = ImageStat.Stat(image2)
@@ -90,11 +95,12 @@ def comparePixels(image1: Image, image2: Image):
     numberOfMisses:int = 0
     length1:int = len(values1)
     length2:int = len(values2)
+
     if length1 != length2:
         return False
 
-    # 1/20th of the pixels are off
     missThreshhold:int = length1//50
+
     for x in range(length1):
         rgb1:Tuple[int,int,int] = values1[x]
         rgb2:Tuple[int,int,int] = values2[x]
@@ -115,6 +121,17 @@ def comparePixels(image1: Image, image2: Image):
     del values2
     return True
 
+path = Path(os.getcwd())
+print('Starting duplicate image finder in ' + str(path))
+traversePath(path)
+
+for fileItem in map:
+    pixelValues = map[fileItem]
+    for fi in map:
+        if fileItem != fi:
+            if comparePixels(pixelValues, map[fi]):
+                print('Possible Match: ' + str(fileItem) + ' and ' + str(fi))
+
 path: Path = Path('F:\\backgrounds_winter')
 # path: Path = Path(os.getcwd())
 
@@ -131,4 +148,3 @@ for fileName in map:
                 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' --Possible Match: ' + str(fileName) + ' and ' + str(fn))
 
 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Finished scanning images for duplicates')
-
