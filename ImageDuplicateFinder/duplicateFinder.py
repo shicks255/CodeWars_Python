@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 from PIL import Image
+from PIL import ImageStat
 
 map: Dict[str, Image.Image] = {}
 
@@ -52,6 +53,35 @@ def traversePath(path: Path):
                     print(err)
                     pass
 
+def comparePixels2(image1: Image, image2: Image):
+    stat1: ImageStat = ImageStat.Stat(image1)
+    stat2: ImageStat = ImageStat.Stat(image2)
+
+    sum1: Tuple[int, int, int] = stat1.sum
+    sum2: Tuple[int, int, int] = stat2.sum
+
+    dif1: int = abs(sum1[0] - sum2[0])
+    dif2: int = abs(sum1[1] - sum2[1])
+    dif3: int = abs(sum1[2] - sum2[2])
+
+    if dif1 > 100_000:
+        del sum1
+        del sum2
+        return False
+    if dif2 > 100_000:
+        del sum1
+        del sum2
+        return False
+    if dif3 > 100_000:
+        del sum1
+        del sum2
+        return False
+
+    del sum1
+    del sum2
+    return True
+
+
 def comparePixels(image1: Image, image2: Image):
 
     values1: List = list(image1.getdata())
@@ -93,11 +123,11 @@ traversePath(path)
 
 for fileName in map:
     collected: int = gc.collect()
-    print('Garbage Collected ' + str(collected) + ' objects')
+    # print('Garbage Collected ' + str(collected) + ' objects')
     img: Image = map[fileName];
     for fn in map:
         if fileName != fn:
-            if comparePixels(img, map[fn]):
+            if comparePixels2(img, map[fn]):
                 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' --Possible Match: ' + str(fileName) + ' and ' + str(fn))
 
 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Finished scanning images for duplicates')
