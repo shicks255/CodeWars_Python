@@ -2,7 +2,6 @@
 
 import os
 import sys
-import gc
 import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -52,11 +51,6 @@ def traversePath(path: Path):
                 except IOError as err:
                     print(err)
                     pass
-
-def comparePixels(pixelList1, pixelList2):
-    numberOfMisses = 0
-    length1 = len(pixelList1)
-    length2 = len(pixelList2)
 
 def comparePixels2(image1: Image, image2: Image):
     stat1: ImageStat = ImageStat.Stat(image1)
@@ -121,30 +115,17 @@ def comparePixels(image1: Image, image2: Image):
     del values2
     return True
 
-path = Path(os.getcwd())
-print('Starting duplicate image finder in ' + str(path))
+# path = Path(os.getcwd())
+path = Path("F:\\backgrounds_autumn")
+print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Starting duplicate image finder in ' + str(path))
 traversePath(path)
 
 for fileItem in map:
     pixelValues = map[fileItem]
     for fi in map:
         if fileItem != fi:
-            if comparePixels(pixelValues, map[fi]):
+            if comparePixels2(pixelValues, map[fi]):
                 print('Possible Match: ' + str(fileItem) + ' and ' + str(fi))
 
-path: Path = Path('F:\\backgrounds_winter')
-# path: Path = Path(os.getcwd())
-
-print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Starting duplicate image finder in ' + str(path))
-traversePath(path)
-
-for fileName in map:
-    collected: int = gc.collect()
-    # print('Garbage Collected ' + str(collected) + ' objects')
-    img: Image = map[fileName];
-    for fn in map:
-        if fileName != fn:
-            if comparePixels2(img, map[fn]):
-                print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' --Possible Match: ' + str(fileName) + ' and ' + str(fn))
-
 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Finished scanning images for duplicates')
+
