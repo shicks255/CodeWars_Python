@@ -16,9 +16,27 @@
 
 import unittest
 
+def mapping(x, wordMap):
+    if x in wordMap:
+        wordMap[x] = wordMap[x] + 1
+    else:
+        wordMap[x] = 1
+
 def scramble(s1, s2):
+    firstWordCharMap = {}
+    for let in s1:
+        mapping(let, firstWordCharMap)
+    secondWordCharMap = {}
+    for let in s2:
+        mapping(let, secondWordCharMap)
 
+    for key in secondWordCharMap.keys():
+        if key not in firstWordCharMap:
+            return False
+        if secondWordCharMap[key] > firstWordCharMap[key]:
+            return False
 
+    return True
 
 scramble('rkqodlw', 'world') #true
 scramble('cedewaraaossoqqyt', 'codewars') #true
@@ -34,5 +52,6 @@ class Tests(unittest.TestCase):
         self.assertFalse(scramble('katas', 'stea'))
         self.assertTrue(scramble('scriptjava', 'javascript'))
         self.assertTrue(scramble('scriptingjava', 'javascript'))
+        self.assertTrue(scramble('fxjnacpzav', 'xjzaavnpcf'))
 unittest.main
 
