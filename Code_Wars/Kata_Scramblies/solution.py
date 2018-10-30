@@ -22,7 +22,7 @@ def mapping(x, wordMap):
     else:
         wordMap[x] = 1
 
-def scramble(s1, s2):
+def scramble2(s1, s2):
     firstWordCharMap = {}
     for let in s1:
         mapping(let, firstWordCharMap)
@@ -38,11 +38,34 @@ def scramble(s1, s2):
 
     return True
 
-scramble('rkqodlw', 'world') #true
-scramble('cedewaraaossoqqyt', 'codewars') #true
-scramble('katas', 'stea') #false
-scramble('scriptjava', 'javascript') #true
-scramble('scriptingjava', 'javascript') #true
+def scramble(s1, s2):
+    s1 = ''.join(sorted(s1))
+    s2 = ''.join(sorted(s2))
+
+    counter1 = 0;
+    counter2 = 0
+
+    while counter2 < len(s2):
+        letter2 = s2[counter2]
+        letter1 = s1[counter1]
+
+        # they dont match, let's see if we can increment counter1
+        if letter2 != letter1:
+            while s1[counter1] < letter2:
+                counter1 += 1;
+            if letter2 != s1[counter1]:
+                return False
+
+        counter2 += 1
+        counter1 += 1
+
+    return True
+
+print(scramble('rkqodlw', 'world')) #true
+print(scramble('cedewaraaossoqqyt', 'codewars')) #true
+print(scramble('katas', 'stea'))#false
+print(scramble('scriptjava', 'javascript')) #true
+print(scramble('scriptingjava', 'javascript')) #true
 
 
 class Tests(unittest.TestCase):
