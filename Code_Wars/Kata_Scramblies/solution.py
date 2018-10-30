@@ -16,6 +16,8 @@
 
 import unittest
 
+from collections import Counter
+
 def mapping(x, wordMap):
     if x in wordMap:
         wordMap[x] = wordMap[x] + 1
@@ -61,11 +63,25 @@ def scramble(s1, s2):
 
     return True
 
-print(scramble('rkqodlw', 'world')) #true
-print(scramble('cedewaraaossoqqyt', 'codewars')) #true
-print(scramble('katas', 'stea'))#false
-print(scramble('scriptjava', 'javascript')) #true
-print(scramble('scriptingjava', 'javascript')) #true
+# another good solution
+def scramble2(s1, s2):
+    counter1 = Counter(s1)
+    counter2 = Counter(s2)
+
+    return
+    print('hi')
+
+# good solution
+def scramble4(s1, s2):
+    (s1.count(char) < s2.count(char) for char in set(s2))
+
+
+print(scramble4('toopers', 'topper')) #true
+# print(scramble('rkqodlw', 'world')) #true
+# print(scramble('cedewaraaossoqqyt', 'codewars')) #true
+# print(scramble('katas', 'stea'))#false
+# print(scramble('scriptjava', 'javascript')) #true
+# print(scramble('scriptingjava', 'javascript')) #true
 
 
 class Tests(unittest.TestCase):
