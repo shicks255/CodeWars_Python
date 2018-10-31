@@ -1,7 +1,6 @@
 # !python3
 import re
 import sys
-import psycopg2
 
 import bs4
 import requests
@@ -71,7 +70,8 @@ def scrapTabs(artistUrl, pageNumber):
                 tab = tab.rstrip(')')
                 tab = tab.rstrip('\'')
             tab = ''.join(('{', tab, '}'))
-            tab.replace('\\\\"', '')
+            tab = tab.replace('\\\\"', '')
+            tab = tab.replace('\\\'', '')
             try:
                 tabData = json.loads(tab)
             except json.decoder.JSONDecodeError:
@@ -118,30 +118,11 @@ def scrapTabs(artistUrl, pageNumber):
                 tab.content = mo.group()
                 payloadTabs.append(tab)
 
+        json_data = json.dumps([ob.__dict__ for ob in payloadTabs])
         TAB_FILE = open('slayerTabsPage1.html', 'a')
-
-        try:
-            conn = psycopg2.connect(host="localhost", database="guitarTabs", user="postgres", password="ashley")
-            cursor = conn.cursor()
-            # cursor.execute("select version()")
-            # data = cursor.fetchone()
-
-            for t in payloadTabs:
-                sql = 'insert into tab(artist, title, content, author_id) values(%s,%s,%s,%s) ;'
-                cursor.execute(sql, (t.artistName, t.songTitle, t.content, t.ugId))
-
-                TAB_FILE.write('<h3>Artist: '  + t.artistName + '</h3>')
-                TAB_FILE.write('<h4>Song: ' + t.songTitle + '</h4>')
-                TAB_FILE.write('<div style="white-space: pre-wrap;">' + t.content + '</div>')
-                TAB_FILE.write('<br/>')
-
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-        finally:
-            if conn is not None:
-                conn.close();
-
+        TAB_FILE.write(json_data)
         TAB_FILE.close()
+
 
 if len(sys.argv) < 1:
     sys.exit()
