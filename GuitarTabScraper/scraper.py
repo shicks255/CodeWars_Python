@@ -25,8 +25,8 @@ MAIN_URL = 'https://www.ultimate-guitar.com/'
 
 # search the entered Artist arg for a URl to start scraping on.
 def getArtistURL(artistName):
-    artistName = artistName.replace(' ', '%20')
-    res = requests.get(MAIN_URL + 'search.php?search_type=band&value=' + artistName)
+    artistSearchName = artistName.replace(' ', '%20')
+    res = requests.get(MAIN_URL + 'search.php?search_type=band&value=' + artistSearchName)
     res.raise_for_status()
     soup = bs4.BeautifulSoup(res.text, 'html.parser')
     results = soup.prettify()
@@ -44,13 +44,14 @@ def getArtistURL(artistName):
             thisArtistName = x[thisArtistNameIndex+15 : x.find('\"artist_url\"')-2]
             if thisArtistName.lower() == artistName.lower():
                 thisArtistUrlIndex = x.find('\"artist_url\"')
-                thisArtistUrl = x[thisArtistUrlIndex+15 : x.find('\"tabs_cnt\"')-2]
+                thisArtistUrl = x[thisArtistUrlIndex+14 : x.find('\"tabs_cnt\"')-2]
+                return thisArtistUrl.replace('\\', '')
                 print(thisArtistUrl)
 
 
 # this is where the heavy lifting is done, remember to add CHORDS
 def scrapTabs(artistUrl, pageNumber):
-    artistUrl = MAIN_URL + 'artist/' + artistUrl + '?pageNumber=' + pageNumber + '?filter=tabs'
+    artistUrl = artistUrl + '?pageNumber=' + str(pageNumber) + '?filter=tabs'
 
     res = requests.get(artistUrl, headers={'User-Agent': 'Mozilla/5.0'})
     res.raise_for_status()
@@ -70,10 +71,16 @@ def scrapTabs(artistUrl, pageNumber):
                 tab = tab.rstrip(')')
                 tab = tab.rstrip('\'')
             tab = ''.join(('{', tab, '}'))
-            tabData = json.loads(tab)
-            # print('\r\n')
-            # print(tabData)
-            # print(tabData['song_name'] + ' ' + tabData['tab_url'])
+            tab.replace('\\\\"', '')
+            try:
+                tabData = json.loads(tab)
+            except json.decoder.JSONDecodeError:
+                print('error with ' + tab)
+                continue
+
+            if 'marketing_type' in tabData.keys():
+                continue
+
             songTitle = tabData['song_name']
             artistName = tabData['artist_name']
             type = tabData['type']
@@ -109,7 +116,6 @@ def scrapTabs(artistUrl, pageNumber):
             mo = regex.search(results)
             if mo:
                 tab.content = mo.group()
-
                 payloadTabs.append(tab)
 
         TAB_FILE = open('slayerTabsPage1.html', 'a')
@@ -121,7 +127,6 @@ def scrapTabs(artistUrl, pageNumber):
             # data = cursor.fetchone()
 
             for t in payloadTabs:
-
                 sql = 'insert into tab(artist, title, content, author_id) values(%s,%s,%s,%s) ;'
                 cursor.execute(sql, (t.artistName, t.songTitle, t.content, t.ugId))
 
@@ -144,6 +149,8 @@ if len(sys.argv) < 1:
 artistToSearch = sys.argv[1]
 
 artistUrl = getArtistURL(artistToSearch)
+
+scrapTabs(artistUrl, 1)
 
 
 sys.exit()
