@@ -7,8 +7,26 @@
 
 # Don't change the order of the elements that are left.
 
+def remove_smallest2(numbers):
+    if len(numbers) == 0:
+        return []
+    min = None
+    for i,x in enumerate(numbers):
+        if min is None or x < numbers[min]:
+            min = i;
 
+    newList = numbers[:]
+    newList.pop(min)
+    return newList
 
-
+# doesnt work, removes ALL smallest items
 def remove_smallest(numbers):
-    raise
+    return [item for item in numbers if min(numbers) != item]
+
+def remove_smallest3(numbers):
+    if len(numbers) == 0:
+        return []
+    mini = numbers.index(min(numbers))
+    return numbers[0:mini] + numbers[mini+1:]
+
+print(remove_smallest3([2,1,5,3,1]))
