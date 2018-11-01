@@ -49,79 +49,91 @@ def getArtistURL(artistName):
 
 
 # this is where the heavy lifting is done, remember to add CHORDS
-def scrapTabs(artistUrl, pageNumber):
-    artistUrl = artistUrl + '?pageNumber=' + str(pageNumber) + '?filter=tabs'
-
-    res = requests.get(artistUrl, headers={'User-Agent': 'Mozilla/5.0'})
-    res.raise_for_status()
-    soup = bs4.BeautifulSoup(res.text, 'html.parser')
-    results = soup.prettify()
-
+def scrapTabs(artistUrl):
     payloadTabs = []
 
-    regex1 = re.compile('(\"other_tabs\":)(.*?)}]')
-    mo = regex1.search(results)
-    if mo:
-        textChunk = str(mo.groups())
-        textChunk = textChunk.replace('(\'\"other_tabs\":\', \'[{', '')
-        tabs = str(textChunk).split('},{')
-        for tab in tabs:
-            if tab[-1:] == ')':
-                tab = tab.rstrip(')')
-                tab = tab.rstrip('\'')
-            tab = ''.join(('{', tab, '}'))
-            tab = tab.replace('\\\\"', '')
-            tab = tab.replace('\\\'', '')
-            try:
-                tabData = json.loads(tab)
-            except json.decoder.JSONDecodeError:
-                print('error with ' + tab)
-                continue
+    keepGoing = True
+    pageNumber = 1
+    while keepGoing:
+        # scrapUrl = artistUrl + '?pageNumber=' + str(pageNumber) + '&filter=tabs'
+        params = {'page': str(pageNumber)}
+        pageNumber += 1
 
-            if 'marketing_type' in tabData.keys():
-                continue
+        res = requests.get(artistUrl, headers={'User-Agent': 'Mozilla/5.0'}, params=params)
+        print(str(res.status_code) + ' for page number ' + str(pageNumber-1))
+        if res is None or res.status_code != 200:
+            keepGoing = False
+            continue
 
-            songTitle = tabData['song_name']
-            artistName = tabData['artist_name']
-            type = tabData['type']
-            version = tabData['version']
-            votes = tabData['votes']
-            rating = tabData['rating']
-            date = tabData['date']
-            tabUrl = tabData['tab_url']
-            tuning = tabData['tuning']
-            typeName = tabData['type_name']
-            id = tabData['id']
+        res.raise_for_status()
+        soup = bs4.BeautifulSoup(res.text, 'html.parser')
+        results = soup.prettify()
 
-            tab = Tab()
-            tab.songTitle = songTitle
-            tab.artistName = artistName
-            tab.type = type
-            tab.version = version
-            tab.votes = votes
-            tab.rating = rating
-            tab.date = date
-            tab.tabUrl = tabUrl
-            tab.tuning = tuning
-            tab.typeName = typeName
-            tab.ugId = id
+        regex1 = re.compile('(\"other_tabs\":)(.*?)}]')
+        mo = regex1.search(results)
+        if mo:
+            textChunk = str(mo.groups())
+            textChunk = textChunk.replace('(\'\"other_tabs\":\', \'[{', '')
+            tabs = str(textChunk).split('},{')
+            for tab in tabs:
+                if tab[-1:] == ')':
+                    tab = tab.rstrip(')')
+                    tab = tab.rstrip('\'')
+                tab = ''.join(('{', tab, '}'))
+                tab = tab.replace('\\\\"', '')
+                tab = tab.replace('\\\'', '')
+                try:
+                    tabData = json.loads(tab)
+                except json.decoder.JSONDecodeError:
+                    print('error with ' + tab)
+                    continue
 
-            url = tabUrl.replace('\\', '')
-            res = requests.get(url, headers={'User-agent': 'Mozilla/5.0'})
-            res.raise_for_status()
-            soup = bs4.BeautifulSoup(res.text, 'html.parser')
-            results = soup.prettify()
+                if 'marketing_type' in tabData.keys():
+                    continue
 
-            regex = re.compile('\"content\":(.*?)\}')
-            mo = regex.search(results)
-            if mo:
-                tab.content = mo.group()
-                payloadTabs.append(tab)
+                songTitle = tabData['song_name']
+                artistName = tabData['artist_name']
+                type = tabData['type']
+                version = tabData['version']
+                votes = tabData['votes']
+                rating = tabData['rating']
+                date = tabData['date']
+                tabUrl = tabData['tab_url']
+                tuning = tabData['tuning']
+                typeName = tabData['type_name']
+                id = tabData['id']
 
-        json_data = json.dumps([ob.__dict__ for ob in payloadTabs])
-        TAB_FILE = open('slayerTabsPage1.html', 'a')
-        TAB_FILE.write(json_data)
-        TAB_FILE.close()
+                tab = Tab()
+                tab.songTitle = songTitle
+                tab.artistName = artistName
+                tab.type = type
+                tab.version = version
+                tab.votes = votes
+                tab.rating = rating
+                tab.date = date
+                tab.tabUrl = tabUrl
+                tab.tuning = tuning
+                tab.typeName = typeName
+                tab.ugId = id
+
+                url = tabUrl.replace('\\', '')
+                res = requests.get(url, headers={'User-agent': 'Mozilla/5.0'})
+                if res.status_code != 200:
+                    continue
+                res.raise_for_status()
+                soup = bs4.BeautifulSoup(res.text, 'html.parser')
+                results = soup.prettify()
+
+                regex = re.compile('\"content\":(.*?)\}')
+                mo = regex.search(results)
+                if mo:
+                    tab.content = mo.group()
+                    payloadTabs.append(tab)
+
+    json_data = json.dumps([ob.__dict__ for ob in payloadTabs])
+    TAB_FILE = open('slayerTabsPage1.txt', 'a')
+    TAB_FILE.write(json_data)
+    TAB_FILE.close()
 
 
 if len(sys.argv) < 1:
@@ -131,7 +143,7 @@ artistToSearch = sys.argv[1]
 
 artistUrl = getArtistURL(artistToSearch)
 
-scrapTabs(artistUrl, 1)
+scrapTabs(artistUrl)
 
 
 sys.exit()
