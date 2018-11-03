@@ -24,6 +24,9 @@ class linkedList():
                 return tempNode
             tempNode = tempNode.next
 
+    # def remove(self, value):
+
+
     def prettyPrint(self):
         theNode = self.root
         cursor = 1
