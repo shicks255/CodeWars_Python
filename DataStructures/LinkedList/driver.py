@@ -1,7 +1,6 @@
 # !python3
 
 from DataStructures.LinkedList.linkedList import linkedList
-import DataStructures.LinkedList.node
 
 list = linkedList()
 
@@ -15,3 +14,11 @@ list.prettyPrint()
 
 node = list.find(4)
 print(node)
+
+node2 = list.find(2)
+print(node2)
+
+list.remove(1)
+list.remove(5)
+list.remove(5)
+list.prettyPrint()

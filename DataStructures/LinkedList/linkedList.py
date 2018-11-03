@@ -24,8 +24,19 @@ class linkedList():
                 return tempNode
             tempNode = tempNode.next
 
-    # def remove(self, value):
-
+    def remove(self, value):
+        if self.root is not None:
+            temp = self.root
+            if temp.value == value:
+                if temp.next is not None:
+                    self.root = temp.next
+                else:
+                    self.root = None
+            while temp is not None:
+                next = temp.next
+                if next is not None and next.value == value:
+                    temp.next = next.next
+                temp = next
 
     def prettyPrint(self):
         theNode = self.root
