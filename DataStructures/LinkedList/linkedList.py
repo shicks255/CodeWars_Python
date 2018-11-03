@@ -1,16 +1,33 @@
 # !python 3
 
-import DataStructures.LinkedList.node as node
+from DataStructures.LinkedList.node import node
 
 class linkedList():
+
+    def __init__(self):
+        self.root = None
 
     def add(self, value):
         if self.root is None:
             self.root = node(value)
         else:
-            tempRoot = self.root
-            while tempRoot.next is not None:
-                tempRoot = tempRoot.next
+            tempNode = self.root
+            while tempNode.next is not None:
+                tempNode = tempNode.next
 
-            tempRoot.next = node(value)
+            tempNode.next = node(value)
 
+    def find(self, value):
+        tempNode = self.root
+        while tempNode is not None:
+            if tempNode.value == value:
+                return tempNode
+            tempNode = tempNode.next
+
+    def prettyPrint(self):
+        theNode = self.root
+        cursor = 1
+        while theNode is not None:
+            print(str(theNode.value) + ' ' + str(cursor))
+            cursor += 1
+            theNode = theNode.next
