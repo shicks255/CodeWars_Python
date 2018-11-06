@@ -30,5 +30,19 @@ class Trie():
 
         return False
 
+    def getCountOfPrefixes(self, word):
+        if self.root is not None:
+            prefixes = 0
+            letters = self.root
+            for i,x in enumerate(word):
+                if x not in letters:
+                    return 0
+                if i != len(word)-1:
+                    child = letters[x]
+                    if child.leaf:
+                       prefixes += 1
+                    letters = child.letters
+
+            return prefixes
 
 
