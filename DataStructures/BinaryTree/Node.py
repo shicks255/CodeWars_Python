@@ -7,3 +7,5 @@ class Node():
         self.left = None
         self.right = None
 
+    def __str__(self):
+        return 'node value of ' + str(self.value)
