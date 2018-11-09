@@ -23,6 +23,7 @@ class Queue():
                 self.head = None
             if tempHead.next is not None:
                 self.head = tempHead.next
+        return tempHead
 
     def prettyPrint(self):
         tempHead = self.head
@@ -32,3 +33,5 @@ class Queue():
             coursor += 1
             tempHead = tempHead.next
 
+    def isEmpty(self):
+        return self.head is None

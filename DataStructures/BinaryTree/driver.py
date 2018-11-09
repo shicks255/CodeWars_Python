@@ -11,3 +11,5 @@ tree.addNode(1)
 tree.addNode(24)
 
 print('hi')
+
+print(tree.nodeCount())

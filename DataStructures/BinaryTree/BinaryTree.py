@@ -1,14 +1,13 @@
 
 from DataStructures.BinaryTree.Node import Node
+from DataStructures.Queue.Queue import Queue
+from DataStructures.Queue.Node import Node as QueueNode
 
 class BinaryTree():
 
     def __init__(self, value):
         self.root = Node(value)
         self.root.leaf = False
-
-    # def addNode(self, value):
-    #     self.addNode(self, self.root, value)
 
     def addNode(self, value, root=None):
         if root is None:
@@ -18,7 +17,6 @@ class BinaryTree():
                 root.left = Node(value)
             else:
                 self.addNode(value, root=root.left)
-
         if value >= root.value:
             if root.right is None:
                 root.right = Node(value)
@@ -32,8 +30,19 @@ class BinaryTree():
         height = 0
 
 
-    # def nodeCount(self):
-    #
+    def nodeCount(self):
+        queue = Queue()
+        queue.enqueue(self.root)
+        count = 0
+        while queue.isEmpty() == False:
+            node = queue.dequeue().value
+            if node is not None:
+                count +=1
+                queue.enqueue(node.left)
+                queue.enqueue(node.right)
+        return count
+
+
     # def leafCount(self):
     #
     # def levelCount(self, level):
