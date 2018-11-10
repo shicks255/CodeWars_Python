@@ -27,8 +27,33 @@ class BinaryTree():
         return self.root is None
 
     # this probably needs pre order traversal
-    def height(self):
-        height = 0
+    def height(self, root=None):
+        if root is None:
+            root = self.root
+        leftValue = None
+        rightValue = None
+        if root.left is None:
+            leftValue = 0
+        else:
+            leftValue = self.height(root.left)
+
+        if root.right is None:
+            rightValue = 0
+        else:
+            rightValue = self.height(root.right)
+
+        if leftValue > rightValue:
+            return leftValue + 1
+        else:
+            return rightValue + 1
+
+
+
+
+
+
+
+
 
     def nodeCount(self):
         queue = Queue()
