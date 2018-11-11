@@ -19,6 +19,8 @@ tree.addNode(20)
 
 print('hi')
 
-print(tree.nodeCount())
-print(tree.leafCount())
-print(tree.height())
+# print(tree.nodeCount())
+# print(tree.leafCount())
+# print(tree.height())
+
+print(tree.preOrder())
