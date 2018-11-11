@@ -58,11 +58,30 @@ class BinaryTree():
         if root.right is not None:
             self.preOrder(root.right)
 
-        return
+        # return
 
-    # def inOrder(self, root=None):
+    def inOrder(self, root=None):
+        if root is None:
+            root = self.root
 
-    # def postOrder(self, root=None):
+        if root.left is not None:
+            self.inOrder(root.left)
+
+        print(root.value)
+
+        if root.right is not None:
+            self.inOrder(root.right)
+
+    def postOrder(self, root=None):
+        if root is None:
+            root = self.root
+
+        if root.left is not None:
+            self.postOrder(root.left)
+        if root.right is not None:
+            self.postOrder(root.right)
+
+        print(root.value)
 
 
 

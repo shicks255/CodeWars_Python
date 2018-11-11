@@ -23,4 +23,4 @@ print('hi')
 # print(tree.leafCount())
 # print(tree.height())
 
-print(tree.preOrder())
+tree.postOrder()
