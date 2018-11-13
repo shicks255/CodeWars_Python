@@ -17,10 +17,12 @@ tree.addNode(20)
 # tree.addNode(1)
 # tree.addNode(24)
 
+print(tree.getNodeCountAtLevel(3))
+
 print('hi')
 
 # print(tree.nodeCount())
 # print(tree.leafCount())
 # print(tree.height())
 
-tree.postOrder()
+# tree.postOrder()

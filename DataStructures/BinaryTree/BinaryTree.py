@@ -1,7 +1,7 @@
 
 from DataStructures.BinaryTree.Node import Node
 from DataStructures.Queue.Queue import Queue
-from DataStructures.Queue.Node import Node as QueueNode
+
 
 class BinaryTree():
 
@@ -58,8 +58,6 @@ class BinaryTree():
         if root.right is not None:
             self.preOrder(root.right)
 
-        # return
-
     def inOrder(self, root=None):
         if root is None:
             root = self.root
@@ -82,16 +80,6 @@ class BinaryTree():
             self.postOrder(root.right)
 
         print(root.value)
-
-
-
-
-
-
-
-
-
-
 
     def nodeCount(self):
         queue = Queue()
@@ -121,4 +109,29 @@ class BinaryTree():
                         queue.enqueue(node.right)
             return count
 
-    # def levelCount(self, level):
+    def levelCount(self, level):
+        if self.root is not None:
+            count = 1
+
+    # assuming 0 is root
+    def getNodeCountAtLevel(self, level, root=None):
+        if level == 0:
+            return 1
+
+        if root is None:
+            root = self.root
+
+        count = 0
+
+        if root.left is not None:
+            count += self.getNodeCountAtLevel(level-1, root.left)
+        if root.right is not None:
+            count += self.getNodeCountAtLevel(level-1, root.right)
+
+        return count
+
+
+
+
+
+
