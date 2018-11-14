@@ -47,39 +47,39 @@ class BinaryTree():
         else:
             return rightValue + 1
 
-    def preOrder(self, root=None):
+    def preOrder(self, function, root=None):
         if root is None:
             root = self.root
 
-        print(root.value)
+        function(root.value)
 
         if root.left is not None:
-            self.preOrder(root.left)
+            self.preOrder(function, root=root.left)
         if root.right is not None:
-            self.preOrder(root.right)
+            self.preOrder(function, root=root.right)
 
-    def inOrder(self, root=None):
-        if root is None:
-            root = self.root
-
-        if root.left is not None:
-            self.inOrder(root.left)
-
-        print(root.value)
-
-        if root.right is not None:
-            self.inOrder(root.right)
-
-    def postOrder(self, root=None):
+    def inOrder(self, function, root=None):
         if root is None:
             root = self.root
 
         if root.left is not None:
-            self.postOrder(root.left)
-        if root.right is not None:
-            self.postOrder(root.right)
+            self.inOrder(function, root=root.left)
 
-        print(root.value)
+        function(root.value)
+
+        if root.right is not None:
+            self.inOrder(function, root=root.right)
+
+    def postOrder(self, function, root=None):
+        if root is None:
+            root = self.root
+
+        if root.left is not None:
+            self.postOrder(function, root=root.left)
+        if root.right is not None:
+            self.postOrder(function, root=root.right)
+
+        function(root.value)
 
     def nodeCount(self):
         queue = Queue()
@@ -109,11 +109,6 @@ class BinaryTree():
                         queue.enqueue(node.right)
             return count
 
-    def levelCount(self, level):
-        if self.root is not None:
-            count = 1
-
-    # assuming 0 is root
     def getNodeCountAtLevel(self, level, root=None):
         if level == 0:
             return 1
@@ -130,8 +125,19 @@ class BinaryTree():
 
         return count
 
+    def sumOfNodes(self):
+        sum = 0
+        queue = Queue()
+        queue.enqueue(self.root)
+        while queue.isEmpty() == False:
+            node = queue.dequeue().value
+            sum += node.value
+            if node.left is not None:
+                queue.enqueue(node.left)
+            if node.right is not None:
+                queue.enqueue(node.right)
 
+        return sum
 
-
-
-
+    # sum of largest path
+    def maxSumPath(self):
