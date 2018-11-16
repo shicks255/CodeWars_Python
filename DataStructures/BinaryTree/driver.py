@@ -15,9 +15,18 @@ tree.addNode(20)
 
 # tree.preOrder(lambda x: print(x))
 
-print(tree.sumOfNodes())
+# print(tree.sumOfNodes())
 
+print(tree.maxSumPath())
 
+tree2 = Tree(5)
+tree2.addNode(6)
+tree2.addNode(4)
+tree2.addNode(2)
+tree2.addNode(1)
+print(tree2.maxSumPath())
+
+tree2.inOrder(lambda x: print(x))
 
 # tree.addNode(3)
 # tree.addNode(4)

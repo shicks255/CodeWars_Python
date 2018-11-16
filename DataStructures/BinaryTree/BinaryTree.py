@@ -140,4 +140,46 @@ class BinaryTree():
         return sum
 
     # sum of largest path
-    def maxSumPath(self):
+    def maxSumPath(self, root=None):
+        if root is None:
+            root = self.root
+
+        if root is not None:
+            if root.left is None and root.right is None:
+                return root.value
+
+            countLeft = root.value
+            countRight = root.value
+
+            if root.left is not None:
+                countLeft += self.maxSumPath(root.left)
+            if root.right is not None:
+                countRight += self.maxSumPath(root.right)
+
+            return max(countLeft, countRight)
+
+        return 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
