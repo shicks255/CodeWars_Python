@@ -24,7 +24,7 @@ class Heap():
         if index % 2 == 0:
             answerIndex = int((index / 2) - 1)
         else:
-            answerIndex = int((index-2 / 2))
+            answerIndex = int((index-1) / 2)
         return [answerIndex, self.values[answerIndex]]
 
     def addValue(self, value):
@@ -32,9 +32,9 @@ class Heap():
         self.heapifyUp()
 
     def pop(self):
-        return self.values.pop()
-        # need heapify down
-
+        item = self.values.pop(0)
+        self.heapifyDown()
+        return item
 
     def heapifyUp(self):
         index = len(self.values)-1
@@ -48,5 +48,23 @@ class Heap():
             index -= 1
 
 
-    # def heapifyDown(self):
-    #     df
+    def heapifyDown(self, index = None):
+        if index is None:
+            index = 0
+
+        rightChild = self.getRightChild(index)
+        leftChild = self.getLeftChild(index)
+
+        if rightChild is not None or leftChild is not None:
+            if leftChild[1] > self.values[index]:
+                temp = self.values[leftChild[0]]
+                self.values[leftChild[0]] = self.values[index]
+                self.values[index] = temp
+                self.heapifyDown(index)
+            if rightChild[1] > self.values[index]:
+                temp = self.values[rightChild[0]]
+                self.values[rightChild[0]] = self.values[index]
+                self.values[index] = temp
+                self.heapifyDown(index)
+            index += 1
+
