@@ -91,7 +91,8 @@ def comparePixels(image1: Image, image2: Image):
     length2:int = len(values2)
 
     if length1 != length2:
-        return False
+        yield False
+        # return False
 
     missThreshhold:int = length1//50
 
@@ -109,14 +110,16 @@ def comparePixels(image1: Image, image2: Image):
         if numberOfMisses > missThreshhold:
             del values1
             del values2
-            return False
+            yield False
+            # return False
 
     del values1
     del values2
-    return True
+    # return True
+    yield True
 
 # path = Path(os.getcwd())
-path = Path("F:\\backgrounds_autumn")
+path = Path("F:\\backgrounds_winter")
 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Starting duplicate image finder in ' + str(path))
 traversePath(path)
 
@@ -124,8 +127,10 @@ for fileItem in map:
     pixelValues = map[fileItem]
     for fi in map:
         if fileItem != fi:
-            if comparePixels2(pixelValues, map[fi]):
+            a = comparePixels(pixelValues, map[fi])
+            if next(a):
                 print('Possible Match: ' + str(fileItem) + ' and ' + str(fi))
+            # if comparePixels2(pixelValues, map[fi]):
 
 print(datetime.datetime.now().strftime('\n%m-%d-%y %H:%M:%S:%f%p') + ' - Finished scanning images for duplicates')
 
