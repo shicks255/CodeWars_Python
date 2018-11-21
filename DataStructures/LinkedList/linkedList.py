@@ -17,6 +17,15 @@ class linkedList():
 
             tempNode.next = node(value)
 
+    def addToFront(self, value):
+        if self.root is None:
+            self.root = node(value)
+        else:
+            temp = self.root
+            self.root = node(value)
+            self.root.next = temp
+
+
     def find(self, value):
         tempNode = self.root
         while tempNode is not None:
