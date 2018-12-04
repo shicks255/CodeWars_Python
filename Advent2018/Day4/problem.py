@@ -56,21 +56,37 @@ with open("input.txt") as input:
             currentGuard = int(pieces[1].replace('#',''))
             startingBatch = x
 
-    most = [0,0]
+    mostGuardAndTotal = [0, 0]
     for x in map.keys():
         line = map[x]
         total = sum(line)
-        if total > most[1]:
-            most[0] = x
-            most[1] = total
+        if total > mostGuardAndTotal[1]:
+            mostGuardAndTotal[0] = x
+            mostGuardAndTotal[1] = total
 
-    print(most)
-    mostSleepy = map[most[0]]
-    sleepiestMinute = max(mostSleepy)
-    for x,minute in enumerate(mostSleepy):
+    mostSleepyMinuteList = map[mostGuardAndTotal[0]]
+    sleepiestMinute = max(mostSleepyMinuteList)
+    for x,minute in enumerate(mostSleepyMinuteList):
         if minute == sleepiestMinute:
-            print(x * most[0])
+            print(x * mostGuardAndTotal[0])
             break
+
+    part2GuardAndMinuteAndAmount = [0,0,0]
+    for x in map.keys():
+        line = map[x]
+        maxDaysSleeping = max(line)
+        if maxDaysSleeping > part2GuardAndMinuteAndAmount[2]:
+            part2GuardAndMinuteAndAmount[0] = x
+            part2GuardAndMinuteAndAmount[2] = maxDaysSleeping
+            for x,minute in enumerate(line):
+                if minute == maxDaysSleeping:
+                    part2GuardAndMinuteAndAmount[1] = x
+                    break
+
+    print(part2GuardAndMinuteAndAmount)
+
+
+
 
 
 
