@@ -65,7 +65,6 @@ with open("input.txt") as input:
             for y in range(height):
                 if grid[fromLeft + x][fromTop + y] > 1:
                     good = False
-
         if good:
             print(id)
 
