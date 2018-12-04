@@ -11,29 +11,28 @@ def parseRecord(record):
     action = record[timeIndex+2:]
     return [date, time, action]
 
-def doSomething(map, currentGaurd, startingBatch, x, lines):
+def fillInGuardMinuteList(map, currentGuard, startingBatch, recordCount, lines):
     startingBatch += 1
-    x -= 1
+    recordCount -= 1
 
     if currentGuard not in map:
-        map[currentGuard] = [0 for x in range(60)]
-
+        map[currentGuard] = [0 for y in range(60)]
     sleepMinutes = map[currentGuard]
 
-    for i in range(x):
+    for i in range(recordCount):
         line = lines[startingBatch+i]
         line = parseRecord(line)
         # even, or falling asleep
         if i % 2 == 0:
             asleepStart = line[1]
-            if int(asleepStart[0:2]) != 0:
-                asleepStart = '00:00'
+            # if int(asleepStart[0:2]) != 0: this is technically not needed
+            #     asleepStart = '00:00'
         # odd, or waking up
         if i % 2 != 0:
             if asleepStart is not None:
                 wakeUp = line[1]
-                if int(wakeUp[0:2]) != 0:
-                    wakeUp = '00:00'
+                # if int(wakeUp[0:2]) != 0: this is technically not needed
+                #     wakeUp = '00:00'
                 start = int(asleepStart[3:])
                 end = int(wakeUp[3:])
                 while start != end:
@@ -44,7 +43,7 @@ def doSomething(map, currentGaurd, startingBatch, x, lines):
 with open("input.txt") as input:
     lines = [x.rstrip('\n') for x in input.readlines()]
     lines.sort()
-    map = {}
+    guardAndMinutesMap = {}
     currentGuard = None
     startingBatch = 0
     for x,line in enumerate(lines):
@@ -52,28 +51,29 @@ with open("input.txt") as input:
         if '#' in record[2]:
             pieces = record[2].split(' ')
             if currentGuard is not None:
-                doSomething(map, currentGuard, startingBatch, x-startingBatch, lines)
+                fillInGuardMinuteList(guardAndMinutesMap, currentGuard, startingBatch, x - startingBatch, lines)
             currentGuard = int(pieces[1].replace('#',''))
             startingBatch = x
 
     mostGuardAndTotal = [0, 0]
-    for x in map.keys():
-        line = map[x]
+    for x in guardAndMinutesMap.keys():
+        line = guardAndMinutesMap[x]
         total = sum(line)
         if total > mostGuardAndTotal[1]:
             mostGuardAndTotal[0] = x
             mostGuardAndTotal[1] = total
 
-    mostSleepyMinuteList = map[mostGuardAndTotal[0]]
+    mostSleepyMinuteList = guardAndMinutesMap[mostGuardAndTotal[0]]
     sleepiestMinute = max(mostSleepyMinuteList)
     for x,minute in enumerate(mostSleepyMinuteList):
         if minute == sleepiestMinute:
             print(x * mostGuardAndTotal[0])
             break
 
+    # part 2
     part2GuardAndMinuteAndAmount = [0,0,0]
-    for x in map.keys():
-        line = map[x]
+    for x in guardAndMinutesMap.keys():
+        line = guardAndMinutesMap[x]
         maxDaysSleeping = max(line)
         if maxDaysSleeping > part2GuardAndMinuteAndAmount[2]:
             part2GuardAndMinuteAndAmount[0] = x
