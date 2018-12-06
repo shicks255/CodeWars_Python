@@ -5,6 +5,21 @@ from collections import Counter
 
 os.chdir(sys.path[0])
 
+def printSizeAfterPolymers(list):
+    start = 0
+    while start < len(list)-2:
+        x = list[start]
+        y = list[start+1]
+        if x.upper() == y.upper():
+            if needToRemove(str(x), str(y)):
+                del list[start:start+2]
+                start -= 2
+                if start < 0:
+                    start = 0
+                    continue
+        start += 1
+    return len(list)
+
 def needToRemove(x, y):
     if x.istitle():
         return y.istitle() == False
@@ -14,49 +29,21 @@ def needToRemove(x, y):
 with open('input.txt') as input:
     line = input.read()
     charList = [x for x in line]
-    start = 0
-    while start < len(charList)-2:
-        x = charList[start]
-        y = charList[start+1]
-        if x.upper() == y.upper():
-            if needToRemove(str(x), str(y)):
-                # print('removing ' + x + ' '  + y)
-                del charList[start:start+2]
-                start -= 2
-                if start < 0:
-                    start = 0
-                    continue
-        start += 1
-
-    # print(charList)
-    # print(len(charList))
+    # part 1
+    print(printSizeAfterPolymers(charList))
 
     # part 2
     charListNew = [x.upper() for x in line]
-    counter = Counter(charListNew)
-    print(counter)
-    mostCommon = ['',0]
-    for item, value in counter.items():
-        if value > mostCommon[1]:
-            mostCommon[0] = item
-            mostCommon[1] = value
+    letters = ['A', 'B', 'C', 'D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
-    someList = [x for x in line if x.upper() != mostCommon[0]]
+    bestLength = 50000
 
-    start = 0
-    while start < len(someList)-2:
-        x = someList[start]
-        y = someList[start+1]
-        if x.upper() == y.upper():
-            if needToRemove(str(x), str(y)):
-            # print('removing ' + x + ' '  + y)
-                del someList[start:start+2]
-                start -= 2
-            if start < 0:
-                start = 0
-                continue
-        start += 1
+    for letter in letters:
+        letterList = [x for x in line if x.upper() != letter]
+        length = printSizeAfterPolymers(letterList)
+        print(length)
+        if length < bestLength:
+            bestLength = length
 
-    print(someList)
-    print(len(someList))
-    print(counter)
+    print(bestLength)
+
