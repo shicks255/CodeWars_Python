@@ -1,7 +1,6 @@
 
 import os
 import sys
-from collections import Counter
 
 os.chdir(sys.path[0])
 
