@@ -5,11 +5,11 @@ import os
 os.chdir(sys.path[0])
 
 def findPath(y, x, coords):
-    x2 = int(coords[0:coords.index(',')])
-    y2 = int(coords[coords.index(',')+1:])
+    y2 = int(coords[0:coords.index(',')])
+    x2 = int(coords[coords.index(',')+1:])
 
-    xDist = abs(x - x2)
-    yDist = abs(y - y2)
+    xDist = abs(x - y2)
+    yDist = abs(x2 - y)
     return xDist + yDist
 
 def isInfinite(x, y, grid):
@@ -38,7 +38,6 @@ def isInfinite(x, y, grid):
         tempy = y
         tempx = x-1
 
-
     while tempx > 0:
         if grid[tempy][tempx] != grid[y][x].replace('*', ''):
             break
@@ -51,17 +50,18 @@ def isInfinite(x, y, grid):
     while tempx < len(grid[y]):
         if grid[tempy][tempx] != grid[y][x].replace('*',''):
             break
-        if tempx == len(grid[y]):
+        tempx += 1
+    if tempx == len(grid[y]):
             return False
-        else:
-            return True
+    else:
+        return True
 
 def getUsableArea(x, y, grid):
     value = grid[int(y)][int(x)].replace('*', '')
     counter = 0
-    for yy, row in enumerate(grid):
-        for xx in grid[yy]:
-            thisValue = grid[int(yy)][int(xx)]
+    for rowCount, row in enumerate(grid):
+        for cellCount, cell in enumerate(row):
+            thisValue = grid[int(rowCount)][int(cellCount)]
             if '.' in thisValue:
                 continue
             if '*' in thisValue:
@@ -85,8 +85,8 @@ with open('input.txt') as input:
         y = int(coord[coord.index(',')+1:])
         grid[y][x] = '*' + str(i+1) + '*'
 
-    for y in range(largestY):
-        for x in range(largestX):
+    for x in range(largestX):
+        for y in range(largestY):
             bestDistance = None
             bestCoord = None
             if '*' in grid[y][x]:
@@ -99,7 +99,6 @@ with open('input.txt') as input:
                     continue
                 if distance == bestDistance:
                     bestCoord = '.'
-                    break
                 if distance < bestDistance:
                     bestDistance = distance
                     bestCoord = i+1
@@ -120,5 +119,6 @@ with open('input.txt') as input:
         count = getUsableArea(p[0:p.index(',')], p[p.index(',')+1:], grid)
         if count > counter:
             counter = count
+            print('currentBest ' + str(p) + ' with ' + str(counter))
 
     print(counter)
