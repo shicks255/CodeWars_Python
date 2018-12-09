@@ -70,6 +70,18 @@ def getUsableArea(x, y, grid):
                 counter += 1
     return counter
 
+def allCoordsWithinLimit(y, x, coords):
+    counter = 0
+    for coord in coords:
+        xValue = int(coord[0:int(coord.index(','))])
+        yValue = int(coord[coord.index(',')+1:])
+
+        distance = abs(x - xValue) + abs(y - yValue)
+        counter += distance
+        if counter >= 10000:
+            return False
+    return True
+
 with open('input.txt') as input:
     coords = [x.rstrip('\n') for x in input.readlines()]
     xCoords = [int(y[0:y.index(',')]) for y in coords]
@@ -85,40 +97,53 @@ with open('input.txt') as input:
         y = int(coord[coord.index(',')+1:])
         grid[y][x] = '*' + str(i+1) + '*'
 
-    for x in range(largestX):
-        for y in range(largestY):
-            bestDistance = None
-            bestCoord = None
-            if '*' in grid[y][x]:
-                continue
-            for i, coord in enumerate(coords):
-                distance = findPath(y, x, coord)
-                if bestDistance is None:
-                    bestDistance = distance
-                    bestCoord = i+1
-                    continue
-                if distance == bestDistance:
-                    bestCoord = '.'
-                if distance < bestDistance:
-                    bestDistance = distance
-                    bestCoord = i+1
-
-            grid[y][x] = str(bestCoord)
-            # print(bestCoord)
+    # for x in range(largestX):
+    #     for y in range(largestY):
+    #         bestDistance = None
+    #         bestCoord = None
+    #         if '*' in grid[y][x]:
+    #             continue
+    #         for i, coord in enumerate(coords):
+    #             distance = findPath(y, x, coord)
+    #             if bestDistance is None:
+    #                 bestDistance = distance
+    #                 bestCoord = i+1
+    #                 continue
+    #             if distance == bestDistance:
+    #                 bestCoord = '.'
+    #             if distance < bestDistance:
+    #                 bestDistance = distance
+    #                 bestCoord = i+1
+    #
+    #         grid[y][x] = str(bestCoord)
+    #         # print(bestCoord)
 
     # print(grid)
     # pprint(grid)
 
-    print('\n'.join(['\t\t'.join([cell for cell in row]) for row in grid]))
+    # print('\n'.join(['\t\t'.join([cell for cell in row]) for row in grid]))
+    #
+    # possibleCoords = [x for x in coords if isInfinite(int(x[0:x.index(',')]), int(x[x.index(',')+1:]), grid)]
+    # print(possibleCoords)
+    #
+    # counter = 0
+    # for p in possibleCoords:
+    #     count = getUsableArea(p[0:p.index(',')], p[p.index(',')+1:], grid)
+    #     if count > counter:
+    #         counter = count
+    #         print('currentBest ' + str(p) + ' with ' + str(counter))
+    #
 
-    possibleCoords = [x for x in coords if isInfinite(int(x[0:x.index(',')]), int(x[x.index(',')+1:]), grid)]
-    print(possibleCoords)
+    for y,_ in enumerate(grid):
+        for x,_ in enumerate(grid[y]):
+            if allCoordsWithinLimit(y, x, coords):
+                grid[y][x] = '#'
 
-    counter = 0
-    for p in possibleCoords:
-        count = getUsableArea(p[0:p.index(',')], p[p.index(',')+1:], grid)
-        if count > counter:
-            counter = count
-            print('currentBest ' + str(p) + ' with ' + str(counter))
+    regionCounter = 0
+    for y,_ in enumerate(grid):
+        for x,_ in enumerate(grid[y]):
+            if '#' in grid[y][x]:
+                regionCounter += 1
 
-    print(counter)
+    print('\n'.join([' '.join([cell for cell in row]) for row in grid]))
+    print(regionCounter)
