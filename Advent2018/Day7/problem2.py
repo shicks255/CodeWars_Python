@@ -42,7 +42,7 @@ with open('input.txt') as input:
     print(''.join(x for x in letterOrder))
 
     # part 2
-    totalTime = 0
+    totalTime = -1
     queue = Queue()
     lettersUsed = []
     keepGoing = True
@@ -63,15 +63,23 @@ with open('input.txt') as input:
                         lettersBeingWorked.append(let)
             else:
                 worker[1] -= 1
-                if worker[1] == 0:
+                if worker[1] <= 0:
                     let = worker[0]
                     lettersUsed.append(let)
                     lettersBeingWorked.remove(let)
                     worker[0] = 0
                     worker[1] = 0
                     lettersToBeWorked = [x for x in dependencyMapCopy.keys() if set(dependencyMapCopy[x]).issubset(set(lettersUsed)) and x not in lettersBeingWorked and x not in lettersUsed]
+                    if len(lettersToBeWorked) > 0:
+                        let = lettersToBeWorked.pop(0)
+                        if let not in lettersBeingWorked:
+                            worker[0] = let
+                            worker[1] = alphaNumbers[let]
+                            lettersBeingWorked.append(let)
+
         if len(lettersUsed) == 26:
             keepGoing = False
+            break
         totalTime += 1
 
     print(totalTime)
