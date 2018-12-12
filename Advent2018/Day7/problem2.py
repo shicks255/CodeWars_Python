@@ -40,6 +40,7 @@ with open('input.txt') as input:
 
     print(letterOrder)
     print(''.join(x for x in letterOrder))
+    # end part 1
 
     # part 2
     totalTime = -1
