@@ -31,6 +31,18 @@ def makeNode(startIndex):
 
     return [node, startIndex]
 
+def getPart2(node):
+    if len(node.childNodes) == 0:
+        return sum(node.metaData)
+    else:
+        sum2 = 0
+        meta = node.metaData
+        for x in meta:
+            if len(node.childNodes) > x-1:
+                child = node.childNodes[x-1]
+                sum2 += getPart2(child)
+        return sum2
+
 with open("input.txt") as input:
     line = input.readlines()
     license = [int(x) for x in str.split(line[0], ' ')]
@@ -47,6 +59,9 @@ with open("input.txt") as input:
         sumOfMeta += sum(node.metaData)
 
     print(sumOfMeta)
+
+    sum2 = getPart2(rootTuple[0])
+    print(sum2)
 
 
 
