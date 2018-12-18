@@ -1,7 +1,7 @@
 
 import sys
-
 import os
+import time
 
 os.chdir(sys.path[0])
 
@@ -48,7 +48,7 @@ def changeCoords(coords):
         coord[0] = coord[0] + coord[2]
         coord[1] = coord[1] + coord[3]
 
-with open('testInput.txt') as input:
+with open('input.txt') as input:
     coords = parseInput(input.readlines())
 
     helpInfo = findHomePoint(coords)
@@ -57,19 +57,30 @@ with open('testInput.txt') as input:
     homePoint[1] = abs(homePoint[1])
     print(helpInfo)
 
-    totalx = abs(helpInfo['bx']) + abs(helpInfo['sx']) + 1
-    totaly = abs(helpInfo['by']) + abs(helpInfo['sy']) + 1
+    seconds = 0;
 
-    grid = [['.' for x in range(totalx)] for y  in range(totaly)]
+    file = open('answer.txt', 'a+')
+    keepGoing = True
+    while keepGoing:
+        helpInfo2 = findHomePoint(coords)
+        home = helpInfo2['home']
+        if abs(home[0]) < 100 and abs(home[1]) < 100:
+            totalx = abs(helpInfo2['bx']) + abs(helpInfo2['sx']) + 1
+            totaly = abs(helpInfo2['by']) + abs(helpInfo2['sy']) + 1
+            grid = [['.' for x in range(totalx)] for y  in range(totaly)]
+            for coord in coords:
+                x = coord[0] + home[0]
+                y = coord[1] + home[1]
+                grid[y][x] = '#'
 
-    while True:
-        for coord in coords:
-            x = coord[0] + homePoint[0]
-            y = coord[1] + homePoint[1]
-            grid[y][x] = '#'
-
-        print('\n'.join([' '.join([cell for cell in row]) for row in grid]))
-        grid = [['.' for x in range(totalx)] for y  in range(totaly)]
+            print('\n'.join([' '.join([cell for cell in row]) for row in grid]))
+            print('\n\n')
+            file.write('\n'.join([''.join([cell for cell in row]) for row in grid]))
+            file.write('\n' + str(seconds) + ' seconds')
+            file.write('\n\n')
+            time.sleep(2)
+            grid = [['.' for x in range(totalx)] for y  in range(totaly)]
+        seconds += 1
         changeCoords(coords)
 
-
+    file.close()
