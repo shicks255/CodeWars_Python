@@ -16,6 +16,14 @@ def getSize(x, y):
     total += grid[y+2][x+2]
     return total
 
+def getSizePart2(x, y, squareSize):
+    total = 0
+
+    for i in range(squareSize):
+        for ii in range(squareSize):
+            total += grid[y+i][x+ii]
+    return total
+
 
 with open("input.txt") as input:
     inputMulty = int(input.read())
@@ -37,20 +45,37 @@ with open("input.txt") as input:
 
             grid[i][ii] = powerLevel
 
-    print('\n'.join([' '.join([' ' + str(cell) + " " for cell in row]) for row in grid]))
+    print('\n'.join([','.join([str(cell) for cell in row]) for row in grid]))
 
-    currentBiggest = [0, 0, 0]
-    for i,y in enumerate(grid):
-        for ii,x in enumerate(y):
-            if i > 297 or ii > 297:
-                continue
-            threeByThreeSize = getSize(ii, i)
-            if threeByThreeSize > currentBiggest[0]:
-                currentBiggest[0] = threeByThreeSize
-                currentBiggest[1] = ii
-                currentBiggest[2] = i
+    # part 1 stuff
+    # currentBiggest = [0, 0, 0]
+    # for i,y in enumerate(grid):
+    #     for ii,x in enumerate(y):
+    #         if i > 297 or ii > 297:
+    #             continue
+    #         threeByThreeSize = getSize(ii, i)
+    #         if threeByThreeSize > currentBiggest[0]:
+    #             currentBiggest[0] = threeByThreeSize
+    #             currentBiggest[1] = ii
+    #             currentBiggest[2] = i
+
+    # part 2 stuff
+    currentBiggest = [0,0,0,0]
+    for sq in range(1, 300):
+        for i,y in enumerate(grid):
+            for ii,x in enumerate(y):
+                if i >(300 - sq) or ii > (300 - sq):
+                    continue
+                size = getSizePart2(ii, i, sq)
+                if size > currentBiggest[0]:
+                    currentBiggest[0] = size
+                    currentBiggest[1] = ii
+                    currentBiggest[2] = i
+                    currentBiggest[3] = sq
+        print(currentBiggest)
 
     print(currentBiggest)
+
 
 
 
