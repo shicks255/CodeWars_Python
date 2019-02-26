@@ -16,16 +16,18 @@ def generation(initialState):
     for x in state[0:2]:
         leftTest += str(x)
     if leftTest in notesMap.keys():
-        addToBeginning = True
-        global startingIndex
-        startingIndex += 1
+        if notesMap[leftTest] == '#':
+            addToBeginning = True
+            global startingIndex
+            startingIndex += 1
 
     rightTest = ''
     for x in state[len(state)-2:]:
         rightTest += str(x)
     rightTest += '...'
     if rightTest in notesMap.keys():
-        addToEnd = True
+        if notesMap[rightTest] == '#':
+            addToEnd = True
 
     for i,x in enumerate(initialState):
         goLeft = i-2

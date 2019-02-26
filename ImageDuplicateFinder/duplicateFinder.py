@@ -80,7 +80,6 @@ def comparePixels2(image1: Image, image2: Image):
     del sum2
     return True
 
-
 def comparePixels(image1: Image, image2: Image):
 
     values1: List = list(image1.getdata())

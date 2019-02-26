@@ -1,7 +1,6 @@
 import requests
 import bs4
 import re
-import json
 import os
 import sys
 import datetime
@@ -21,17 +20,13 @@ if mo:
 
     payload = payload.replace('\\\\', '')
     payload = payload.replace('\\', '')
-    try:
-        games = json.loads(payload)
-    except json.decoder.JSONDecodeError:
-        print('error with making json')
 
+    games = re.findall("(\"appid\":\d+)(.*?)(\"name\":.*?)(\"logo\")", payload)
     os.chdir(sys.path[0])
     LOG_FILE = open('gamesFile.txt', 'a')
-
     for game in games:
-        appId = str(game['appid'])
-        name = game['name']
+        appId = str(game[0][8:])
+        name = str(game[2][8:-2])
         line = name + ' - ' + appId
         if line not in open('gamesFile.txt').read():
             LOG_FILE.write(line + ' ' + datetime.datetime.now().strftime('%m-%d-%y %H:%M:%S:%f%p'))
