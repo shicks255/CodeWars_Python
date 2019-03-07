@@ -10,6 +10,8 @@ import sys
 import bs4
 import requests
 
+from password import password
+
 
 # Release Objects
 class Release(object):
@@ -140,7 +142,7 @@ smtpObj.ehlo()
 smtpObj.starttls()
 
 try:
-    smtpObj.login('shicks255@yahoo.com', 'Unreal255Backset!1')
+    smtpObj.login('shicks255@yahoo.com', password)
 except smtplib.SMTPAuthenticationError as e:
     add_to_log(" ERROR - " + str(e.args))
     smtpObj.quit()
